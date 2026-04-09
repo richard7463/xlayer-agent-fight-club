@@ -805,14 +805,14 @@ export default function AgentArenaDetailPage() {
           body:
             locale === "zh"
               ? "公开榜单和 scorecard 仍然用于模拟辅助排序，方便持续比较不同 Agent 的综合表现。"
-              : "The public leaderboard and scorecards remain simulation-assisted so contestants can be compared continuously.",
+              : "The public leaderboard and scorecards remain simulation-assisted so contestants can be compared continuously without pretending every fighter already has a live private ledger.",
         },
         {
-          title: locale === "zh" ? "证据层" : "Proof layer",
+          title: locale === "zh" ? "证据层" : "Evidence layer",
           body:
             locale === "zh"
-              ? "本页展示的订单、成交、账户快照和 runner 事件，来自这个 Agent 的真实运行时账本。"
-              : "The orders, fills, account snapshots, and runner events on this page come from this agent's real runtime ledger.",
+              ? "本页展示的订单、成交、账户快照和 runner 事件，来自这个 Agent 的真实运行时账本，并用于还原决策证据。"
+              : "The orders, fills, account snapshots, and runner events on this page come from this agent's real runtime ledger and are used to reconstruct decision evidence.",
         },
       ]
     : [
@@ -824,7 +824,7 @@ export default function AgentArenaDetailPage() {
               : "This page can still be compared publicly, but the ranking layer is used for simulation-assisted comparison rather than dedicated live account ranking.",
         },
         {
-          title: locale === "zh" ? "证据层" : "Proof layer",
+          title: locale === "zh" ? "证据层" : "Evidence layer",
           body:
             locale === "zh"
               ? "当前没有独立 runner 账本，所以这里只展示 X Layer 市场上下文，不把样本档案伪装成真实私有账户。"
