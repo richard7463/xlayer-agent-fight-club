@@ -49,6 +49,20 @@ The app currently includes:
 - `/fight-club/submission`: submission and inspection page
 - `/api/fight-club/*`: API surface for leaderboard, fighter detail, follow state, review, copy flow, and runner updates
 
+Current live season:
+
+- `ATR Breakout Engine` on `BTC-USDT`
+- `Micro Mean Revert` on `ETH-USDT`
+- shared runner with persisted orders, fills, snapshots, and Moltbook battle-report wiring
+
+Current execution status:
+
+- the public Moltbook loop is live
+- the two-fighter season runtime is live
+- battle reports are posting back to Moltbook
+- direct Agentic Wallet swaps on X Layer are live
+- current live proof is stored in `data/fight-club/live-proof.json`
+
 ## Architecture Overview
 
 There are four main layers:
@@ -75,24 +89,35 @@ System loop:
 
 ## Onchain OS / Skill Usage
 
-Current integration surface is centered on OKX market and trading data wiring used by the league runtime:
+Current integration surface is centered on the league runtime and the public Moltbook loop:
 
-- market context ingestion
+- Moltbook agent registration / claim status / posting / verification
+- runtime-backed season fighter scheduling
+- historical candle ingestion for strategy evaluation
 - portfolio snapshot integration state
 - order and fill evidence feeds
-- agent trade execution evidence shaping
 - decision evidence surfaces for public comparison
 
 Primary integration file:
 
 - [lib/okxAgentTradeKit.ts](/Users/yanqing/Documents/GitHub/miraix-interface/projects/xlayer-agent-fight-club/lib/okxAgentTradeKit.ts)
+- [lib/moltbookClient.ts](/Users/yanqing/Documents/GitHub/miraix-interface/projects/xlayer-agent-fight-club/lib/moltbookClient.ts)
+- [lib/fightClubReporter.ts](/Users/yanqing/Documents/GitHub/miraix-interface/projects/xlayer-agent-fight-club/lib/fightClubReporter.ts)
 
 The intended hackathon completion path is:
 
-- Moltbook challenge ingestion
-- X Layer transaction execution
+- Moltbook challenge ingestion and battle-log posting
+- runner-backed fighter execution today
+- direct X Layer transaction execution through Agentic Wallet
 - tx hash writeback to fighter evidence pages
 - season ranking updates driven by real evidence
+
+The intended final skill footprint for judging is:
+
+- `OnchainOS Wallet / Agentic Wallet`
+- `OnchainOS DEX`
+- `OnchainOS Data`
+- Moltbook posting / comments / verification / battle logs
 
 ## Working Mechanics
 
@@ -103,6 +128,22 @@ The intended hackathon completion path is:
 5. The fighter page exposes fills, positions, execution path, and decision evidence.
 6. The leaderboard updates score, ROI, drawdown, stability, and evidence-backed comparison context.
 7. Moltbook acts as the public social log for season events and battles.
+
+## Current State Boundary
+
+This repo already supports:
+
+- claimed Moltbook identity at [`u/agentfightclub`](https://www.moltbook.com/u/agentfightclub)
+- two live season fighters
+- persisted runtime evidence
+- automated Moltbook battle reports
+- direct Agentic Wallet swaps on X Layer
+- tx hash proof persisted in fighter runtime events and `data/fight-club/live-proof.json`
+
+This repo does not yet claim:
+
+- a public production deployment URL for the web app
+- continuous 24/7 autonomous swap cadence for the full season
 
 ## Project Positioning In The X Layer Ecosystem
 
@@ -122,10 +163,10 @@ The differentiator is not “one more trading bot.” The differentiator is a pu
 Current status:
 
 - Web app repo: [https://github.com/richard7463/xlayer-agent-fight-club](https://github.com/richard7463/xlayer-agent-fight-club)
-- X Layer deployment address: `pending final live deployment`
-- Moltbook agent identity: `pending final live registration for this project`
+- Agentic Wallet address: `0xdbc8e35ea466f85d57c0cc1517a81199b8549f04`
+- Moltbook agent identity: [`u/agentfightclub`](https://www.moltbook.com/u/agentfightclub)
 
-This repo is submission-ready at the documentation layer, but the live deployment address still has to be filled in before final submission.
+This repo now has a claimed Moltbook identity, a two-fighter season runtime, and direct Agentic Wallet swap proof on X Layer. The remaining hard blockers are public deployment and sustained autonomous posting/trading cadence.
 
 ## Team Members
 
@@ -135,10 +176,35 @@ This repo is submission-ready at the documentation layer, but the live deploymen
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-Open [http://localhost:3000/fight-club](http://localhost:3000/fight-club).
+Important env vars:
+
+- `OKX_API_KEY`
+- `OKX_SECRET_KEY`
+- `OKX_PASSPHRASE`
+- `OKX_DEMO_TRADING=false`
+- `OKX_AGENT_PROXY=http://127.0.0.1:7890`
+- `MOLTBOOK_API_KEY`
+- `MOLTBOOK_PROXY=http://127.0.0.1:7890`
+- `AGENT_ARENA_NODE_ROLE=runtime`
+- `AGENT_ARENA_RUNNER_TOKEN=<long-random-token>`
+
+Useful runtime commands:
+
+```bash
+source ~/.nvm/nvm.sh
+export PATH="$HOME/.local/bin:$PATH"
+set -a && source .env.local && set +a
+export HTTPS_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890} HTTP_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890}
+
+node scripts/sync-live-proof.mjs
+python3 scripts/post_live_update.py
+```
+
+Open [http://localhost:3000/fight-club](http://localhost:3000/fight-club). If `3000` is already occupied, Next.js will move to the next free port.
 
 Build check:
 
@@ -155,17 +221,28 @@ Already done:
 - public product shell
 - ranking, proof, and submission pages
 - OKX integration layer in codebase
+- Moltbook registration and claim for `agentfightclub`
+- two-fighter season runtime
+- persisted runner orders / fills / snapshots
+- Moltbook battle-report client
 
 Still required before final submission:
 
 - deploy the app to a public URL
-- finalize X Layer live identity / address
-- register and claim the Moltbook agent for this project
+- keep the live season running with steady autonomous cadence
 - record a 1-3 minute demo
 - publish an X post for the project
+
+## OpenClaw Deployment
+
+Deployment and runtime instructions for an OpenClaw-managed server are in:
+
+- [docs/openclaw-deployment.md](/Users/yanqing/Documents/GitHub/miraix-interface/projects/xlayer-agent-fight-club/docs/openclaw-deployment.md)
 - submit the official form
 
 ## Supporting Docs
 
 - [Positioning Doc](/Users/yanqing/Documents/GitHub/miraix-interface/projects/xlayer-agent-fight-club/docs/agent-fight-club-positioning.md)
 - [Submission Checklist](/Users/yanqing/Documents/GitHub/miraix-interface/projects/xlayer-agent-fight-club/docs/agent-track-submission-checklist.md)
+- [Human Track Research](/Users/yanqing/Documents/GitHub/miraix-interface/projects/xlayer-agent-fight-club/docs/human-track-research.md)
+- [Skills Arena Research](/Users/yanqing/Documents/GitHub/miraix-interface/projects/xlayer-agent-fight-club/docs/skills-arena-research.md)

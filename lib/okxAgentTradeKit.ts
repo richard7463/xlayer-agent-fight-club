@@ -7,6 +7,11 @@ const OKX_BASE_URL = process.env.OKX_AGENT_TRADE_BASE || "https://www.okx.com";
 const execFileAsync = promisify(execFile);
 const OKX_FETCH_TIMEOUT_MS = 2500;
 const OKX_PYTHON_TIMEOUT_SECONDS = 6;
+const OKX_HTTP_PROXY =
+  process.env.OKX_AGENT_PROXY ||
+  process.env.HTTPS_PROXY ||
+  process.env.HTTP_PROXY ||
+  "";
 
 export type OkxPrivateCredentials = {
   key: string;
@@ -325,17 +330,24 @@ method = sys.argv[3]
 headers = json.loads(sys.argv[4])
 body = sys.argv[5]
 timeout = int(sys.argv[6])
+proxy = sys.argv[7]
 
 payload = None
 if body:
     payload = body.encode("utf-8")
 
+kwargs = {
+    "headers": headers,
+    "data": payload,
+    "timeout": timeout,
+}
+if proxy:
+    kwargs["proxies"] = {"http": proxy, "https": proxy}
+
 response = requests.request(
     method,
     base + path,
-    headers=headers,
-    data=payload,
-    timeout=timeout,
+    **kwargs,
 )
 
 sys.stdout.write(json.dumps({
@@ -355,6 +367,7 @@ sys.stdout.write(json.dumps({
       JSON.stringify(args.headers || {}),
       args.body || "",
       `${OKX_PYTHON_TIMEOUT_SECONDS}`,
+      OKX_HTTP_PROXY,
     ],
     {
       maxBuffer: 1024 * 1024 * 4,

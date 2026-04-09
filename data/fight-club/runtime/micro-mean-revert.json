@@ -1,33 +1,54 @@
 {
   "agentId": "micro-mean-revert",
   "createdAt": "2026-03-27T06:41:57.111Z",
-  "updatedAt": "2026-03-27T08:24:47.658Z",
+  "updatedAt": "2026-04-09T11:05:32.883Z",
   "enabled": true,
-  "status": "error",
+  "status": "active",
   "tickIntervalSec": 45,
   "initialCapitalUsd": 10000,
-  "tickCount": 8,
-  "totalOrders": 0,
-  "totalFills": 0,
+  "tickCount": 12,
+  "totalOrders": 1,
+  "totalFills": 1,
   "closedTrades": 0,
   "winningTrades": 0,
   "blowups": 0,
-  "quoteBalanceUsd": 10000,
-  "basePositionQty": 0,
-  "averageEntryPrice": 0,
-  "lastMarketPrice": 2058.95,
-  "lastMarketChange24hPct": -0.06,
+  "quoteBalanceUsd": 9580.001749287,
+  "basePositionQty": 0.202063,
+  "averageEntryPrice": 2078.55,
+  "lastMarketPrice": 2178.16,
+  "lastMarketChange24hPct": -0.55,
   "realizedPnlUsd": 0,
-  "unrealizedPnlUsd": 0,
-  "totalPnlUsd": 0,
-  "maxPnlUsd": 0,
-  "maxEquityUsd": 10000,
+  "unrealizedPnlUsd": 20.13,
+  "totalPnlUsd": 20.13,
+  "maxPnlUsd": 20.13,
+  "maxEquityUsd": 10020.13,
   "maxDrawdownPct": 0,
-  "feesUsd": 0,
-  "positionValueUsd": 0,
+  "feesUsd": 0.000202063,
+  "positionValueUsd": 440.13,
   "activeOrderIds": [],
-  "orders": [],
-  "fills": [],
+  "orders": [
+    {
+      "orderId": "3463298065973596160",
+      "side": "buy",
+      "state": "filled",
+      "requestedQuoteUsd": 420,
+      "requestedBaseSize": null,
+      "createdAt": "2026-04-09T06:38:45.553Z",
+      "updatedAt": "2026-04-09T06:39:22.890Z"
+    }
+  ],
+  "fills": [
+    {
+      "tradeId": "806028228",
+      "orderId": "3463298065973596160",
+      "side": "buy",
+      "fillPrice": 2078.55,
+      "baseSize": 0.202063,
+      "quoteValueUsd": 419.99804865000004,
+      "feeUsd": 0.000202063,
+      "timestamp": "2026-04-09T06:38:45.536Z"
+    }
+  ],
   "snapshots": [
     {
       "timestamp": "2026-03-27T06:41:58.127Z",
@@ -132,9 +153,90 @@
       "unrealizedPnlUsd": 0,
       "totalPnlUsd": 0,
       "activeOrders": 0
+    },
+    {
+      "timestamp": "2026-04-09T06:38:45.554Z",
+      "marketPrice": 2178.03,
+      "quoteBalanceUsd": 10000,
+      "positionQty": 0,
+      "averageEntryPrice": 0,
+      "positionValueUsd": 0,
+      "equityUsd": 10000,
+      "realizedPnlUsd": 0,
+      "unrealizedPnlUsd": 0,
+      "totalPnlUsd": 0,
+      "activeOrders": 1
+    },
+    {
+      "timestamp": "2026-04-09T06:39:22.890Z",
+      "marketPrice": 2178.17,
+      "quoteBalanceUsd": 9580,
+      "positionQty": 0.202063,
+      "averageEntryPrice": 2078.55,
+      "positionValueUsd": 440.13,
+      "equityUsd": 10020.13,
+      "realizedPnlUsd": 0,
+      "unrealizedPnlUsd": 20.13,
+      "totalPnlUsd": 20.13,
+      "activeOrders": 0
+    },
+    {
+      "timestamp": "2026-04-09T06:41:03.799Z",
+      "marketPrice": 2178.16,
+      "quoteBalanceUsd": 9580,
+      "positionQty": 0.202063,
+      "averageEntryPrice": 2078.55,
+      "positionValueUsd": 440.13,
+      "equityUsd": 10020.13,
+      "realizedPnlUsd": 0,
+      "unrealizedPnlUsd": 20.13,
+      "totalPnlUsd": 20.13,
+      "activeOrders": 0
     }
   ],
   "events": [
+    {
+      "id": "live_mnrdf5qr_micro-mean-revert",
+      "timestamp": "2026-04-09T11:05:32.883Z",
+      "type": "fill",
+      "status": "success",
+      "title": "Agentic Wallet swap recorded",
+      "note": "0.3 USDC -> 0.003596677619317886 OKB | swap 0x0cbff36e0d8d7254c4afd927f4b734fe34220c187297aef4337cacee8a02880b | approve 0x1bfa27686a223cac5753ed33ebe7ee726a46b53b50db64f269680a229cb2d4cb"
+    },
+    {
+      "id": "run_mnr3z12u_7tq909",
+      "timestamp": "2026-04-09T06:41:03.798Z",
+      "type": "error",
+      "status": "failed",
+      "title": "Sell order rejected",
+      "note": "Demo order submission failed: All operations failed | 51008: Order failed. Your available ETH balance is insufficient, and your available margin (in USD) is too low for borrowing. ; fetch fallback: This operation was aborted"
+    },
+    {
+      "id": "run_mnr3wv7u_uyl7qa",
+      "timestamp": "2026-04-09T06:39:22.890Z",
+      "type": "fill",
+      "status": "success",
+      "title": "Order fill recorded",
+      "note": "BUY 0.20206300 at 2078.55.",
+      "orderId": "3463298065973596160"
+    },
+    {
+      "id": "run_mnr3w2ep_hyyfl6",
+      "timestamp": "2026-04-09T06:38:45.553Z",
+      "type": "order",
+      "status": "success",
+      "title": "Buy order submitted",
+      "note": "Submitted a runner buy for 420.00 USDT.",
+      "orderId": "3463298065973596160"
+    },
+    {
+      "id": "run_mnr3u54u_hh9kko",
+      "timestamp": "2026-04-09T06:37:15.774Z",
+      "type": "error",
+      "status": "failed",
+      "title": "Market sync failed",
+      "note": "Market fallback active: Command failed: python3 -c \nimport json\nimport requests\nimport sys\n\nbase = sys.argv[1]\npath = sys.argv[2]\nmethod = sys.argv[3]\nheaders = json.loads(sys.argv[4])\nbody = sys.argv[5]\ntimeout = int(sys.argv[6])\n\npayload = None\nif body:\n    payload = body.encode(\"utf-8\")\n\nresponse = requests.request(\n    method,\n    base + path,\n    headers=headers,\n    data=payload,\n    timeout=timeout,\n)\n\nsys.stdout.write(json.dumps({\n    \"status\": response.status_code,\n    \"text\": response.text,\n}))\n https://www.okx.com /api/v5/market/ticker?instId=ETH-USDT GET {\"Accept\":\"application/json\",\"User-Agent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36\",\"Accept-Language\":\"en-US,en;q=0.9\"}  6\nTraceback (most recent call last):\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connection.py\", line 204, in _new_conn\n    sock = connection.create_connection(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/util/connection.py\", line 85, in create_connection\n    raise err\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/util/connection.py\", line 73, in create_connection\n    sock.connect(sa)\nOSError: [Errno 64] Host is down\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 787, in urlopen\n    response = self._make_request(\n               ^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 488, in _make_request\n    raise new_e\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 1093, in _validate_conn\n    conn.connect()\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connection.py\", line 759, in connect\n    self.sock = sock = self._new_conn()\n                       ^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connection.py\", line 219, in _new_conn\n    raise NewConnectionError(\nurllib3.exceptions.NewConnectionError: HTTPSConnection(host='www.okx.com', port=443): Failed to establish a new connection: [Errno 64] Host is down\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/adapters.py\", line 644, in send\n    resp = conn.urlopen(\n           ^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 841, in urlopen\n    retries = retries.increment(\n              ^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/util/retry.py\", line 535, in increment\n    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nurllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/ticker?instId=ETH-USDT (Caused by NewConnectionError(\"HTTPSConnection(host='www.okx.com', port=443): Failed to establish a new connection: [Errno 64] Host is down\"))\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<string>\", line 17, in <module>\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/api.py\", line 59, in request\n    return session.request(method=method, url=url, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/sessions.py\", line 589, in request\n    resp = self.send(prep, **send_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/sessions.py\", line 703, in send\n    r = adapter.send(request, **kwargs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/adapters.py\", line 677, in send\n    raise ConnectionError(e, request=request)\nrequests.exceptions.ConnectionError: HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/ticker?instId=ETH-USDT (Caused by NewConnectionError(\"HTTPSConnection(host='www.okx.com', port=443): Failed to establish a new connection: [Errno 64] Host is down\"))\n; fetch fallback: fetch failed"
+    },
     {
       "id": "run_mn8ja3jr_q1n502",
       "timestamp": "2026-03-27T06:41:57.111Z",
@@ -144,9 +246,10 @@
       "note": "The agent has been added to the demo runner."
     }
   ],
-  "nextTickAt": "2026-03-27T08:25:31.816Z",
-  "lastTickAt": "2026-03-27T08:24:47.658Z",
-  "lastError": "Execution feed stays on fallback until OKX private credentials are configured.",
+  "nextTickAt": "2026-04-09T06:41:43.436Z",
+  "lastTickAt": "2026-04-09T06:41:00.057Z",
   "lastAction": "hold",
-  "lastActionNote": "Short-only strategies are not enabled on the current spot runner yet."
+  "lastActionNote": "Demo order submission failed: All operations failed | 51008: Order failed. Your available ETH balance is insufficient, and your available margin (in USD) is too low for borrowing. ; fetch fallback: This operation was aborted",
+  "lastOrderAt": "2026-04-09T06:38:45.553Z",
+  "lastOrderId": "3463298065973596160"
 }

@@ -2,6 +2,8 @@ import { getArenaAgent, getArenaAgents, type ArenaAgent } from "@/lib/agentArena
 import { listStoredArenaAgents, type StoredArenaAgent } from "@/lib/agentArenaStore";
 import { syncDemoCopyFollowers } from "@/lib/agentArenaCopyStore";
 import { shouldAutoStartArenaRunner } from "@/lib/agentArenaDeployment";
+import { getFightClubSeasonFighters, type FightClubStrategyId } from "@/lib/fightClubSeason";
+import { maybePostFightClubSeasonUpdate } from "@/lib/fightClubReporter";
 import {
   appendArenaRunnerEvent,
   applyRunnerRuntimeToAgent,
@@ -24,7 +26,6 @@ import {
 } from "@/lib/okxAgentTradeKit";
 
 const DEFAULT_TICK_INTERVAL_SEC = 45;
-const ORDER_COOLDOWN_MS = 5 * 60 * 1000;
 
 type RunnerState = {
   started: boolean;
@@ -37,6 +38,13 @@ type RunnerTarget = {
   timeframe: string;
   direction: StoredArenaAgent["submission"]["direction"];
   copyTradeEnabled: boolean;
+  strategy: FightClubStrategyId;
+  maxQuoteFraction: number;
+  maxQuoteUsd: number;
+  minQuoteBalanceUsd: number;
+  stopLossPct: number;
+  takeProfitPct: number;
+  cooldownMs: number;
 };
 
 declare global {
@@ -102,25 +110,45 @@ function inferDirection(agent: ArenaAgent): StoredArenaAgent["submission"]["dire
 
 async function listRunnerTargets(): Promise<RunnerTarget[]> {
   const storedAgents = await listStoredArenaAgents();
-  const storedIds = new Set(storedAgents.map((entry) => entry.agent.id));
+  const agentIndex = new Map<string, { agent: ArenaAgent; copyTradeEnabled: boolean; timeframe?: string; direction?: StoredArenaAgent["submission"]["direction"] }>();
 
-  const storedTargets: RunnerTarget[] = storedAgents.map((entry) => ({
-    agent: entry.agent,
-    timeframe: entry.submission.timeframe,
-    direction: entry.submission.direction,
-    copyTradeEnabled: true,
-  }));
+  for (const entry of storedAgents) {
+    agentIndex.set(entry.agent.id, {
+      agent: entry.agent,
+      copyTradeEnabled: true,
+      timeframe: entry.submission.timeframe,
+      direction: entry.submission.direction,
+    });
+  }
 
-  const officialTargets: RunnerTarget[] = getArenaAgents()
-    .filter((agent) => !storedIds.has(agent.id))
-    .map((agent) => ({
-      agent,
-      timeframe: inferTimeframe(agent),
-      direction: inferDirection(agent),
-      copyTradeEnabled: false,
-    }));
+  for (const agent of getArenaAgents()) {
+    if (!agentIndex.has(agent.id)) {
+      agentIndex.set(agent.id, {
+        agent,
+        copyTradeEnabled: false,
+      });
+    }
+  }
 
-  return [...storedTargets, ...officialTargets];
+  return getFightClubSeasonFighters()
+    .map((fighter) => {
+      const entry = agentIndex.get(fighter.id);
+      if (!entry) return null;
+      return {
+        agent: entry.agent,
+        timeframe: entry.timeframe || fighter.timeframe || inferTimeframe(entry.agent),
+        direction: entry.direction || fighter.direction || inferDirection(entry.agent),
+        copyTradeEnabled: entry.copyTradeEnabled,
+        strategy: fighter.strategy,
+        maxQuoteFraction: fighter.maxQuoteFraction,
+        maxQuoteUsd: fighter.maxQuoteUsd,
+        minQuoteBalanceUsd: fighter.minQuoteBalanceUsd,
+        stopLossPct: fighter.stopLossPct,
+        takeProfitPct: fighter.takeProfitPct,
+        cooldownMs: fighter.cooldownMs,
+      } satisfies RunnerTarget;
+    })
+    .filter((item): item is RunnerTarget => Boolean(item));
 }
 
 function average(values: number[]) {
@@ -128,21 +156,77 @@ function average(values: number[]) {
   return values.reduce((sum, value) => sum + value, 0) / values.length;
 }
 
-function computeSignal(
-  closes: number[],
-  direction: StoredArenaAgent["submission"]["direction"],
+function averageRange(
+  points: Array<{
+    high: number;
+    low: number;
+  }>,
 ) {
+  if (!points.length) return 0;
+  return average(points.map((point) => Math.max(0, point.high - point.low)));
+}
+
+function standardDeviation(values: number[]) {
+  if (values.length <= 1) return 0;
+  const mean = average(values);
+  const variance = average(values.map((value) => (value - mean) ** 2));
+  return Math.sqrt(variance);
+}
+
+function computeAtrBreakoutSignal(
+  points: Array<{ close: number; high: number; low: number }>,
+) {
+  const closes = points.map((point) => point.close);
   const recent = closes.slice(-6);
-  const longWindow = closes.slice(-14);
+  const medium = closes.slice(-10);
+  const longWindow = closes.slice(-20);
   const shortMa = average(recent);
+  const mediumMa = average(medium);
   const longMa = average(longWindow);
   const last = closes.at(-1) ?? 0;
   const prev = closes.at(-2) ?? last;
+  const breakoutLevel = Math.max(...points.slice(-10, -1).map((point) => point.high));
   const momentumPct = prev > 0 ? ((last - prev) / prev) * 100 : 0;
-  const bullish = shortMa >= longMa * 0.998 && momentumPct >= -0.05;
-  const bearish = shortMa < longMa * 0.997 || momentumPct <= -0.4;
+  const atrShort = averageRange(points.slice(-6));
+  const atrLong = averageRange(points.slice(-20, -6));
+  const expandingVolatility = atrLong > 0 ? atrShort >= atrLong * 1.08 : atrShort > 0;
+  const trendAligned = shortMa > mediumMa && mediumMa >= longMa * 0.998;
+  const breakoutConfirmed = last >= breakoutLevel * 0.9992 && momentumPct >= 0.14;
 
-  if (direction === "short") {
+  return {
+    enterLong: trendAligned && expandingVolatility && breakoutConfirmed,
+    exitLong: last < shortMa * 0.995 || momentumPct <= -0.48,
+    note: `ATR breakout | shortMA ${shortMa.toFixed(2)} mediumMA ${mediumMa.toFixed(2)} longMA ${longMa.toFixed(2)} | ATR ${atrShort.toFixed(2)}/${atrLong.toFixed(2)} | momentum ${momentumPct.toFixed(2)}%.`,
+  };
+}
+
+function computeMeanReversionSignal(
+  points: Array<{ close: number; high: number; low: number }>,
+) {
+  const closes = points.map((point) => point.close);
+  const lookback = closes.slice(-14);
+  const last = closes.at(-1) ?? 0;
+  const prev = closes.at(-2) ?? last;
+  const basis = average(lookback);
+  const deviation = standardDeviation(lookback);
+  const zScore = deviation > 0 ? (last - basis) / deviation : 0;
+  const shortMa = average(closes.slice(-5));
+  const wasOversold = zScore <= -1.05 || last < shortMa * 0.992;
+  const stabilization = last >= prev * 0.998;
+  const bounceComplete = last >= basis * 0.998 || zScore >= 0.35;
+
+  return {
+    enterLong: wasOversold && stabilization,
+    exitLong: bounceComplete || last < basis * 0.986,
+    note: `Mean reversion | basis ${basis.toFixed(2)} | z-score ${zScore.toFixed(2)} | shortMA ${shortMa.toFixed(2)}.`,
+  };
+}
+
+function computeSignal(
+  target: RunnerTarget,
+  points: Array<{ close: number; high: number; low: number }>,
+) {
+  if (target.direction === "short") {
     return {
       enterLong: false,
       exitLong: true,
@@ -150,11 +234,11 @@ function computeSignal(
     };
   }
 
-  return {
-    enterLong: bullish,
-    exitLong: bearish,
-    note: `shortMA ${shortMa.toFixed(2)} vs longMA ${longMa.toFixed(2)}, momentum ${momentumPct.toFixed(2)}%.`,
-  };
+  if (target.strategy === "atr-breakout") {
+    return computeAtrBreakoutSignal(points);
+  }
+
+  return computeMeanReversionSignal(points);
 }
 
 function isOrderOpen(state: string) {
@@ -273,7 +357,7 @@ function processNewFills(runtime: ArenaRunnerRuntime, fills: ArenaTradeFillFeed[
     .map((order) => order.orderId);
 }
 
-function canPlaceNewOrder(runtime: ArenaRunnerRuntime) {
+function canPlaceNewOrder(runtime: ArenaRunnerRuntime, target: RunnerTarget) {
   if (runtime.activeOrderIds.length > 0) {
     return false;
   }
@@ -282,7 +366,7 @@ function canPlaceNewOrder(runtime: ArenaRunnerRuntime) {
     return true;
   }
 
-  return Date.now() - new Date(runtime.lastOrderAt).getTime() >= ORDER_COOLDOWN_MS;
+  return Date.now() - new Date(runtime.lastOrderAt).getTime() >= target.cooldownMs;
 }
 
 async function placeBuyOrder(
@@ -291,12 +375,12 @@ async function placeBuyOrder(
   marketPrice: number,
 ) {
   const clientOrderId = createClientOrderId(target.agent.id);
-  const maxBudget = Math.min(runtime.quoteBalanceUsd * 0.18, 520);
-  const quoteBudget = Math.max(420, Math.min(maxBudget, runtime.quoteBalanceUsd * 0.25));
+  const maxBudget = Math.min(runtime.quoteBalanceUsd * target.maxQuoteFraction, target.maxQuoteUsd);
+  const quoteBudget = Math.max(target.maxQuoteUsd * 0.72, maxBudget);
 
-  if (quoteBudget < 420 || runtime.quoteBalanceUsd < 450) {
+  if (quoteBudget < target.maxQuoteUsd * 0.72 || runtime.quoteBalanceUsd < target.minQuoteBalanceUsd) {
     runtime.lastAction = "hold";
-    runtime.lastActionNote = "Not enough quote balance to place a new demo order.";
+    runtime.lastActionNote = `${target.agent.name} is below its cash floor for a new runner order.`;
     return;
   }
 
@@ -308,7 +392,10 @@ async function placeBuyOrder(
     size: quoteBudget.toFixed(2),
     referencePrice: marketPrice,
     leverageCap: "spot",
-    rationale: "Auto-enter long on bullish spot signal.",
+    rationale:
+      target.strategy === "atr-breakout"
+        ? "Season fighter breakout entry on expanding ATR and confirmed range escape."
+        : "Season fighter mean-reversion entry on local dislocation and stabilization.",
     blocked: false,
     clientOrderId,
   };
@@ -344,14 +431,14 @@ async function placeBuyOrder(
   runtime.activeOrderIds = [result.orderId, ...runtime.activeOrderIds].slice(0, 12);
   appendArenaRunnerEvent(
     runtime,
-    createArenaRunnerEvent({
-      type: "order",
-      status: "success",
-      title: "Buy order submitted",
-      note: `Submitted a spot demo buy for ${quoteBudget.toFixed(2)} USDT.`,
-      orderId: result.orderId,
-    }),
-  );
+      createArenaRunnerEvent({
+        type: "order",
+        status: "success",
+        title: "Buy order submitted",
+        note: `Submitted a runner buy for ${quoteBudget.toFixed(2)} USDT.`,
+        orderId: result.orderId,
+      }),
+    );
 }
 
 async function placeSellOrder(
@@ -375,7 +462,10 @@ async function placeSellOrder(
     size: quoteValue.toFixed(2),
     referencePrice: marketPrice,
     leverageCap: "spot",
-    rationale: "Auto-exit long position on bearish or stop/take-profit signal.",
+    rationale:
+      target.strategy === "atr-breakout"
+        ? "Season fighter breakout exit on failed follow-through or target reached."
+        : "Season fighter mean-reversion exit on bounce completion or stop violation.",
     blocked: false,
     clientOrderId,
     baseSizeOverride: runtime.basePositionQty.toFixed(8),
@@ -412,22 +502,23 @@ async function placeSellOrder(
   runtime.activeOrderIds = [result.orderId, ...runtime.activeOrderIds].slice(0, 12);
   appendArenaRunnerEvent(
     runtime,
-    createArenaRunnerEvent({
-      type: "order",
-      status: "success",
-      title: "Sell order submitted",
-      note: `Submitted a spot demo sell for ${runtime.basePositionQty.toFixed(8)} units.`,
-      orderId: result.orderId,
-    }),
-  );
+      createArenaRunnerEvent({
+        type: "order",
+        status: "success",
+        title: "Sell order submitted",
+        note: `Submitted a runner sell for ${runtime.basePositionQty.toFixed(8)} units.`,
+        orderId: result.orderId,
+      }),
+    );
 }
 
 async function processRunnerTarget(target: RunnerTarget) {
   const runtime = await ensureArenaRunnerRuntime(target.agent.id);
   if (!runtime.enabled) {
-    return;
+    return runtime;
   }
 
+  runtime.tickIntervalSec = DEFAULT_TICK_INTERVAL_SEC;
   runtime.status = "active";
   runtime.nextTickAt = new Date(Date.now() + runtime.tickIntervalSec * 1000).toISOString();
 
@@ -453,7 +544,7 @@ async function processRunnerTarget(target: RunnerTarget) {
       }),
     );
     await saveArenaRunnerRuntime(target.agent.id, runtime);
-    return;
+    return runtime;
   }
 
   runtime.lastMarketPrice = marketResult.market.lastPrice;
@@ -465,8 +556,7 @@ async function processRunnerTarget(target: RunnerTarget) {
   mergeOrderStates(runtime, orderStateMap);
   processNewFills(runtime, executionFeed.fills);
 
-  const closes = historyResult.points.map((point) => point.close);
-  const signal = computeSignal(closes, target.direction);
+  const signal = computeSignal(target, historyResult.points);
   const positionPnlPct =
     runtime.basePositionQty > 0 && runtime.averageEntryPrice > 0
       ? ((marketResult.market.lastPrice - runtime.averageEntryPrice) / runtime.averageEntryPrice) * 100
@@ -480,9 +570,9 @@ async function processRunnerTarget(target: RunnerTarget) {
   runtime.lastAction = "hold";
   runtime.lastActionNote = signal.note;
 
-  if (canPlaceNewOrder(runtime)) {
+  if (canPlaceNewOrder(runtime, target)) {
     if (shouldBootstrapEntry) {
-      runtime.lastActionNote = "Opening an initial demo position so the runner starts with a real execution trail.";
+      runtime.lastActionNote = `Opening the first season position for ${target.agent.name}.`;
       await placeBuyOrder(target, runtime, marketResult.market.lastPrice);
     } else if (
       runtime.basePositionQty <= 0.00000001 &&
@@ -492,7 +582,7 @@ async function processRunnerTarget(target: RunnerTarget) {
       await placeBuyOrder(target, runtime, marketResult.market.lastPrice);
     } else if (
       runtime.basePositionQty > 0.00000001 &&
-      (signal.exitLong || positionPnlPct <= -1.4 || positionPnlPct >= 2.8)
+      (signal.exitLong || positionPnlPct <= target.stopLossPct || positionPnlPct >= target.takeProfitPct)
     ) {
       await placeSellOrder(target, runtime, marketResult.market.lastPrice);
     }
@@ -511,10 +601,13 @@ async function processRunnerTarget(target: RunnerTarget) {
   if (target.copyTradeEnabled) {
     await syncDemoCopyFollowers(target.agent.id, target.agent.symbol, runtime);
   }
+  return runtime;
 }
 
 async function runCycleInternal() {
   const targets = await listRunnerTargets();
+  const reportEntries: Array<{ agent: ArenaAgent; runtime: ArenaRunnerRuntime }> = [];
+
   for (const target of targets) {
     await ensureArenaRunnerRuntime(
       target.agent.id,
@@ -527,7 +620,13 @@ async function runCycleInternal() {
     );
 
     try {
-      await processRunnerTarget(target);
+      const runtime = await processRunnerTarget(target);
+      if (runtime) {
+        reportEntries.push({
+          agent: applyRunnerRuntimeToAgent(target.agent, runtime),
+          runtime,
+        });
+      }
     } catch (error) {
       await updateArenaRunnerRuntime(target.agent.id, (current) => {
         current.status = "error";
@@ -544,6 +643,10 @@ async function runCycleInternal() {
         return current;
       });
     }
+  }
+
+  if (reportEntries.length > 0) {
+    await maybePostFightClubSeasonUpdate(reportEntries);
   }
 }
 

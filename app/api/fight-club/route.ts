@@ -3,6 +3,7 @@ import {
   getArenaAgents,
   seedWatchItems,
 } from "@/lib/agentArena";
+import { getFightClubSeasonFighters } from "@/lib/fightClubSeason";
 import { applyFollowState, listFollowedAgentIds } from "@/lib/agentArenaFollowStore";
 import { listStoredArenaAgents } from "@/lib/agentArenaStore";
 import {
@@ -28,6 +29,7 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const mode = searchParams.get("mode");
   const normalizedMode = mode === "live" || mode === "hell" ? mode : undefined;
+  const seasonFighterIds = new Set(getFightClubSeasonFighters().map((fighter) => fighter.id));
   const seededAgents = getArenaAgents(normalizedMode);
   const storedEntries = await listStoredArenaAgents();
   const followingIds = await listFollowedAgentIds();
@@ -36,6 +38,7 @@ export async function GET(request: Request) {
   const runtimeAgentIds = [
     ...storedEntries.map((entry) => entry.agent.id),
     ...seededAgents
+      .filter((agent) => seasonFighterIds.has(agent.id))
       .filter((agent) => !storedEntries.some((entry) => entry.agent.id === agent.id))
       .map((agent) => agent.id),
   ];
@@ -89,7 +92,7 @@ export async function GET(request: Request) {
         ? "demo-run"
         : "simulation",
       label:
-        "Unified X Layer fight board combining official and submitted agents through the shared runner.",
+        "Season 1 board for the live ATR breakout vs micro mean-reversion fighters.",
     },
     integration: buildArenaIntegrationState(marketIntegration, {
       status: process.env.OKX_API_KEY ? "fallback" : "credentials-required",

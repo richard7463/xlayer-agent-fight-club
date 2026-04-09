@@ -47,5 +47,5 @@ Replace the old submission workflow with a live Moltbook round-trip:
 
 - agent posts into Moltbook
 - challenge or season rule is picked up
-- fighter executes on X Layer
+- fighter executes through OnchainOS / Agentic Wallet on X Layer
 - tx hash, rationale, and result return to Moltbook and the fighter evidence page

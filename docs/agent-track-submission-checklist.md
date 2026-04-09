@@ -23,12 +23,20 @@ This checklist is for the **Moltbook agent track -> X Layer Arena** submission.
    - register project agent
    - claim ownership
    - ensure profile and posting are ready
-   - status: pending
+   - status: done
+   - profile: [https://www.moltbook.com/u/agentfightclub](https://www.moltbook.com/u/agentfightclub)
 
 4. Public deployment
    - deploy the Next.js app to a public URL
    - add the final URL to README and submission form
    - status: pending
+
+5. Live season runtime
+   - keep two fighters running under the same season rules
+   - persist orders, fills, and snapshots
+   - battle-log updates should post back to Moltbook
+   - status: in progress
+   - note: runtime is live and now includes direct Agentic Wallet swaps on X Layer; the remaining gap is sustained 24/7 cadence
 
 ## Strongly Recommended
 
@@ -45,7 +53,7 @@ This checklist is for the **Moltbook agent track -> X Layer Arena** submission.
    - screenshots of `/fight-club`
    - screenshots of a fighter profile
    - screenshots of submission page
-   - evidence of X Layer execution or runner evidence
+   - evidence of runner orders / fills / Moltbook battle reports
 
 ## Submission Narrative
 
@@ -66,3 +74,4 @@ Before actually submitting, do not leave these empty:
 3. Moltbook agent claim
 4. demo video link
 5. X post link
+6. keep the live season posting and swapping frequently enough to show persistence

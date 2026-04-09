@@ -1,33 +1,54 @@
 {
   "agentId": "atr-breakout-engine",
   "createdAt": "2026-03-27T06:41:39.264Z",
-  "updatedAt": "2026-03-27T08:24:03.155Z",
+  "updatedAt": "2026-04-09T11:05:32.881Z",
   "enabled": true,
-  "status": "error",
+  "status": "active",
   "tickIntervalSec": 45,
   "initialCapitalUsd": 10000,
-  "tickCount": 8,
-  "totalOrders": 0,
-  "totalFills": 0,
+  "tickCount": 12,
+  "totalOrders": 1,
+  "totalFills": 1,
   "closedTrades": 0,
   "winningTrades": 0,
   "blowups": 0,
-  "quoteBalanceUsd": 10000,
-  "basePositionQty": 0,
-  "averageEntryPrice": 0,
-  "lastMarketPrice": 68336,
-  "lastMarketChange24hPct": -0.71,
+  "quoteBalanceUsd": 9460.00054360867,
+  "basePositionQty": 0.00769333,
+  "averageEntryPrice": 70190.6,
+  "lastMarketPrice": 70954.9,
+  "lastMarketChange24hPct": -0.17,
   "realizedPnlUsd": 0,
-  "unrealizedPnlUsd": 0,
-  "totalPnlUsd": 0,
-  "maxPnlUsd": 0,
-  "maxEquityUsd": 10000,
+  "unrealizedPnlUsd": 5.88,
+  "totalPnlUsd": 5.88,
+  "maxPnlUsd": 5.88,
+  "maxEquityUsd": 10005.88,
   "maxDrawdownPct": 0,
-  "feesUsd": 0,
-  "positionValueUsd": 0,
+  "feesUsd": 0.00000769333,
+  "positionValueUsd": 545.88,
   "activeOrderIds": [],
-  "orders": [],
-  "fills": [],
+  "orders": [
+    {
+      "orderId": "3463297957223682048",
+      "side": "buy",
+      "state": "filled",
+      "requestedQuoteUsd": 540,
+      "requestedBaseSize": null,
+      "createdAt": "2026-04-09T06:38:42.422Z",
+      "updatedAt": "2026-04-09T06:39:20.803Z"
+    }
+  ],
+  "fills": [
+    {
+      "tradeId": "1211474122",
+      "orderId": "3463297957223682048",
+      "side": "buy",
+      "fillPrice": 70190.6,
+      "baseSize": 0.00769333,
+      "quoteValueUsd": 539.999448698,
+      "feeUsd": 0.00000769333,
+      "timestamp": "2026-04-09T06:38:42.295Z"
+    }
+  ],
   "snapshots": [
     {
       "timestamp": "2026-03-27T06:41:40.214Z",
@@ -132,9 +153,82 @@
       "unrealizedPnlUsd": 0,
       "totalPnlUsd": 0,
       "activeOrders": 0
+    },
+    {
+      "timestamp": "2026-04-09T06:38:42.422Z",
+      "marketPrice": 70950,
+      "quoteBalanceUsd": 10000,
+      "positionQty": 0,
+      "averageEntryPrice": 0,
+      "positionValueUsd": 0,
+      "equityUsd": 10000,
+      "realizedPnlUsd": 0,
+      "unrealizedPnlUsd": 0,
+      "totalPnlUsd": 0,
+      "activeOrders": 1
+    },
+    {
+      "timestamp": "2026-04-09T06:39:20.805Z",
+      "marketPrice": 70955.1,
+      "quoteBalanceUsd": 9460,
+      "positionQty": 0.00769333,
+      "averageEntryPrice": 70190.6,
+      "positionValueUsd": 545.88,
+      "equityUsd": 10005.88,
+      "realizedPnlUsd": 0,
+      "unrealizedPnlUsd": 5.88,
+      "totalPnlUsd": 5.88,
+      "activeOrders": 0
+    },
+    {
+      "timestamp": "2026-04-09T06:40:58.425Z",
+      "marketPrice": 70954.9,
+      "quoteBalanceUsd": 9460,
+      "positionQty": 0.00769333,
+      "averageEntryPrice": 70190.6,
+      "positionValueUsd": 545.88,
+      "equityUsd": 10005.88,
+      "realizedPnlUsd": 0,
+      "unrealizedPnlUsd": 5.88,
+      "totalPnlUsd": 5.88,
+      "activeOrders": 0
     }
   ],
   "events": [
+    {
+      "id": "live_mnrdf5qp_atr-breakout-engine",
+      "timestamp": "2026-04-09T11:05:32.881Z",
+      "type": "fill",
+      "status": "success",
+      "title": "Agentic Wallet swap recorded",
+      "note": "0.008 OKB -> 0.664215 USDC | swap 0xd192e73fbdb9575b63fb9d7f780eeb89f0258dad2a71c914603d35cf132b6919"
+    },
+    {
+      "id": "run_mnr3wtlw_x14v9n",
+      "timestamp": "2026-04-09T06:39:20.804Z",
+      "type": "fill",
+      "status": "success",
+      "title": "Order fill recorded",
+      "note": "BUY 0.00769333 at 70190.60.",
+      "orderId": "3463297957223682048"
+    },
+    {
+      "id": "run_mnr3vzzq_hzb2gy",
+      "timestamp": "2026-04-09T06:38:42.422Z",
+      "type": "order",
+      "status": "success",
+      "title": "Buy order submitted",
+      "note": "Submitted a runner buy for 540.00 USDT.",
+      "orderId": "3463297957223682048"
+    },
+    {
+      "id": "run_mnr3u4to_xgghcl",
+      "timestamp": "2026-04-09T06:37:15.372Z",
+      "type": "error",
+      "status": "failed",
+      "title": "Market sync failed",
+      "note": "Market fallback active: Command failed: python3 -c \nimport json\nimport requests\nimport sys\n\nbase = sys.argv[1]\npath = sys.argv[2]\nmethod = sys.argv[3]\nheaders = json.loads(sys.argv[4])\nbody = sys.argv[5]\ntimeout = int(sys.argv[6])\n\npayload = None\nif body:\n    payload = body.encode(\"utf-8\")\n\nresponse = requests.request(\n    method,\n    base + path,\n    headers=headers,\n    data=payload,\n    timeout=timeout,\n)\n\nsys.stdout.write(json.dumps({\n    \"status\": response.status_code,\n    \"text\": response.text,\n}))\n https://www.okx.com /api/v5/market/books?instId=BTC-USDT&sz=1 GET {\"Accept\":\"application/json\",\"User-Agent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36\",\"Accept-Language\":\"en-US,en;q=0.9\"}  6\nTraceback (most recent call last):\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connection.py\", line 204, in _new_conn\n    sock = connection.create_connection(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/util/connection.py\", line 85, in create_connection\n    raise err\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/util/connection.py\", line 73, in create_connection\n    sock.connect(sa)\nTimeoutError: timed out\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 787, in urlopen\n    response = self._make_request(\n               ^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 488, in _make_request\n    raise new_e\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 464, in _make_request\n    self._validate_conn(conn)\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 1093, in _validate_conn\n    conn.connect()\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connection.py\", line 759, in connect\n    self.sock = sock = self._new_conn()\n                       ^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connection.py\", line 213, in _new_conn\n    raise ConnectTimeoutError(\nurllib3.exceptions.ConnectTimeoutError: (<HTTPSConnection(host='www.okx.com', port=443) at 0x10ca2dd50>, 'Connection to www.okx.com timed out. (connect timeout=6)')\n\nThe above exception was the direct cause of the following exception:\n\nTraceback (most recent call last):\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/adapters.py\", line 644, in send\n    resp = conn.urlopen(\n           ^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/connectionpool.py\", line 841, in urlopen\n    retries = retries.increment(\n              ^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/urllib3/util/retry.py\", line 535, in increment\n    raise MaxRetryError(_pool, url, reason) from reason  # type: ignore[arg-type]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nurllib3.exceptions.MaxRetryError: HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/books?instId=BTC-USDT&sz=1 (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.okx.com', port=443) at 0x10ca2dd50>, 'Connection to www.okx.com timed out. (connect timeout=6)'))\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"<string>\", line 17, in <module>\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/api.py\", line 59, in request\n    return session.request(method=method, url=url, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/sessions.py\", line 589, in request\n    resp = self.send(prep, **send_kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/sessions.py\", line 703, in send\n    r = adapter.send(request, **kwargs)\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Library/Frameworks/Python.framework/Versions/3.11/lib/python3.11/site-packages/requests/adapters.py\", line 665, in send\n    raise ConnectTimeout(e, request=request)\nrequests.exceptions.ConnectTimeout: HTTPSConnectionPool(host='www.okx.com', port=443): Max retries exceeded with url: /api/v5/market/books?instId=BTC-USDT&sz=1 (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.okx.com', port=443) at 0x10ca2dd50>, 'Connection to www.okx.com timed out. (connect timeout=6)'))\n; fetch fallback: fetch failed"
+    },
     {
       "id": "run_mn8mxefn_y180yw",
       "timestamp": "2026-03-27T08:24:03.155Z",
@@ -208,9 +302,10 @@
       "note": "The agent has been added to the demo runner."
     }
   ],
-  "nextTickAt": "2026-03-27T08:24:47.053Z",
-  "lastTickAt": "2026-03-27T08:24:03.155Z",
-  "lastError": "Execution feed stays on fallback until OKX private credentials are configured.",
+  "nextTickAt": "2026-04-09T06:41:40.990Z",
+  "lastTickAt": "2026-04-09T06:40:58.424Z",
   "lastAction": "hold",
-  "lastActionNote": "OKX private credentials are not configured for demo order submission."
+  "lastActionNote": "ATR breakout | shortMA 70975.17 mediumMA 70922.77 longMA 70940.00 | ATR 140.93/174.16 | momentum 0.13%.",
+  "lastOrderAt": "2026-04-09T06:38:42.421Z",
+  "lastOrderId": "3463297957223682048"
 }
