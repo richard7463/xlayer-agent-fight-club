@@ -1,0 +1,185 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --foreground-rgb: 230, 242, 255;
+    --background-start-rgb: 3, 17, 29;
+    --background-end-rgb: 9, 21, 36;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --foreground-rgb: 230, 242, 255;
+        --background-start-rgb: 3, 17, 29;
+        --background-end-rgb: 9, 21, 36;
+    }
+}
+
+@layer base {
+    html {
+        font-family: 'Plus Jakarta Sans', 'Inter', system-ui, sans-serif;
+    }
+
+    body {
+        color: rgb(var(--foreground-rgb));
+        background:
+            radial-gradient(circle at top left, rgba(0, 197, 140, 0.16), transparent 28%),
+            radial-gradient(circle at top right, rgba(59, 181, 255, 0.14), transparent 24%),
+            linear-gradient(180deg, rgb(var(--background-start-rgb)) 0%, rgb(var(--background-end-rgb)) 100%);
+        min-height: 100vh;
+    }
+}
+
+/* Modern scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #31506f;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #456886;
+}
+
+/* Chat message styles */
+.userMessage {
+    @apply text-gray-800 dark:text-gray-200;
+}
+
+/* Modern button styles */
+.btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 py-2 rounded-lg transition-all duration-200;
+}
+
+.btn-secondary {
+    @apply bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium px-4 py-2 rounded-lg transition-all duration-200 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-200;
+}
+
+/* Input styles */
+.input-primary {
+    @apply border border-gray-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:border-gray-700 dark:bg-gray-800 dark:text-white;
+}
+
+/* Card styles */
+.card {
+    @apply bg-white rounded-xl shadow-sm border border-gray-100 dark:bg-gray-800 dark:border-gray-700;
+}
+
+/* Animation utilities */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(10px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.animate-slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+/* MCP Server page styles */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-4 {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Text color utilities */
+.text-sg {
+    color: #6b7280;
+}
+
+/* Background utilities */
+.bg-\[\#1E1E1E88\] {
+    background-color: rgba(30, 30, 30, 0.53);
+}
+
+.bg-\[\#2D2D2D88\] {
+    background-color: rgba(45, 45, 45, 0.53);
+}
+
+/* Border utilities */
+.border-\[\#888888ff\] {
+    border-color: rgba(136, 136, 136, 1);
+}
+
+@layer components {
+  .circle-mark-base {
+    @apply flex items-center justify-center rounded-full text-base font-semibold;
+  }
+
+  .btn-arena-primary {
+    @apply inline-flex items-center gap-3 rounded-full bg-[#16c784] px-7 py-4 text-base font-semibold text-white shadow-[0_18px_36px_rgba(22,199,132,0.26)] transition-all duration-200 hover:scale-105 hover:bg-[#10b775] active:scale-95;
+  }
+
+  .btn-arena-secondary {
+    @apply inline-flex items-center gap-3 rounded-full border border-white/12 bg-white/8 px-7 py-4 text-base font-medium text-white transition-all duration-200 hover:scale-105 hover:bg-white/14 active:scale-95;
+  }
+
+  .card-arena-base {
+    @apply rounded-[34px] border border-border bg-card shadow-[0_24px_60px_rgba(2,12,20,0.22)];
+  }
+
+  .modal-arena-base {
+    @apply w-full rounded-[32px] p-7;
+    border: 1px solid rgba(154, 190, 221, 0.24);
+    background: #f7fbff;
+    box-shadow: 0 36px 100px rgba(2, 12, 20, 0.44);
+  }
+
+  .table-arena-row {
+    @apply grid gap-5 border-t border-arena-divider-light px-6 py-6 first:border-t-0 xl:grid-cols-[260px_140px_140px_140px_minmax(0,1fr)_160px_140px] xl:items-center;
+  }
+
+  .card-base {
+    @apply rounded-[22px] border border-arena-rank-card-border bg-arena-rank-card-bg shadow-[0_20px_50px_rgba(2,12,20,0.12)] transition-all duration-200 hover:border-arena-link-hover-border hover:bg-white;
+  }
+
+  .agent-card-layout {
+    @apply flex flex-col gap-4 p-5; /* 基础布局，可根据需要调整 */
+  }
+
+  .watchlist-card-layout {
+    @apply flex flex-col gap-4 p-6; /* 基础布局，可根据需要调整 */
+  }
+
+  .status-badge {
+    @apply inline-flex rounded-full px-3 py-1 text-xs font-medium;
+  }
+}
