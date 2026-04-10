@@ -129,6 +129,12 @@ The `admin/tick` route requires:
 - `AGENT_ARENA_RUNNER_TOKEN` set
 - `Authorization: Bearer <AGENT_ARENA_RUNNER_TOKEN>`
 
+Important runtime behavior:
+
+- `admin/tick` calls the real season runner
+- with `FIGHT_CLUB_LIVE_TRADING=true`, the runner can execute real Agentic Wallet buy and sell swaps for both fighters
+- the timer service is therefore responsible for both trading cadence and posting cadence
+
 ## systemd Layout
 
 Use one long-running service for the web app and one timer-driven service for runtime work.

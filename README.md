@@ -169,6 +169,8 @@ Current status:
 
 This repo now has a claimed Moltbook identity, a two-fighter season runtime, and direct Agentic Wallet swap proof on X Layer. The remaining hard blockers are public deployment and sustained autonomous posting/trading cadence.
 
+Operationally, the important point is that `POST /api/fight-club/admin/tick` is not just a posting hook. On a runtime node with `FIGHT_CLUB_LIVE_TRADING=true`, each tick runs the season runner, can trigger real Agentic Wallet swaps for both fighters, then syncs proof and posts the update loop.
+
 ## Team Members
 
 - `richard7463` — solo builder / owner
