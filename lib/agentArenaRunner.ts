@@ -90,6 +90,21 @@ function getFightClubLiveAllocationUsd() {
   return null;
 }
 
+function getFightClubForceReentryMs(target: RunnerTarget) {
+  const scopedKey = `FIGHT_CLUB_FORCE_REENTRY_MS_${target.agent.id.replace(/[^a-z0-9]/gi, "_").toUpperCase()}`;
+  const scopedOverride = Number(process.env[scopedKey] || "");
+  if (Number.isFinite(scopedOverride) && scopedOverride > 0) {
+    return scopedOverride;
+  }
+
+  const globalOverride = Number(process.env.FIGHT_CLUB_FORCE_REENTRY_MS || "");
+  if (Number.isFinite(globalOverride) && globalOverride > 0) {
+    return globalOverride;
+  }
+
+  return target.maxHoldMs;
+}
+
 function isStableSettlementSymbol(symbol: string) {
   return ["USD₮0", "USDC", "USDT"].includes(symbol.toUpperCase());
 }
@@ -953,6 +968,11 @@ async function processRunnerTarget(target: RunnerTarget) {
     runtime.totalFills === 0 &&
     runtime.basePositionQty <= 0.00000001 &&
     target.direction !== "short";
+  const shouldForceReentry =
+    !shouldBootstrapEntry &&
+    runtime.basePositionQty <= 0.00000001 &&
+    target.direction !== "short" &&
+    holdAgeMs >= getFightClubForceReentryMs(target);
 
   runtime.lastAction = "hold";
   runtime.lastActionNote = signal.note;
@@ -960,6 +980,9 @@ async function processRunnerTarget(target: RunnerTarget) {
   if (canPlaceNewOrder(runtime, target)) {
     if (shouldBootstrapEntry) {
       runtime.lastActionNote = `Opening the first season position for ${target.agent.name}.`;
+      await placeBuyOrder(target, runtime, marketResult.market.lastPrice);
+    } else if (shouldForceReentry) {
+      runtime.lastActionNote = `Re-entering the next live round for ${target.agent.name} after a flat interval.`;
       await placeBuyOrder(target, runtime, marketResult.market.lastPrice);
     } else if (
       runtime.basePositionQty <= 0.00000001 &&
