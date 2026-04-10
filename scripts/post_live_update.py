@@ -226,7 +226,23 @@ def main():
             },
             timeout=20,
         )
-        verify_res.raise_for_status()
+        if not verify_res.ok:
+            try:
+                verify_body = verify_res.json()
+            except Exception:
+                verify_body = {"raw": verify_res.text}
+            print(
+                json.dumps(
+                    {
+                        "warning": "post created but verification failed",
+                        "postId": post_id,
+                        "status": verify_res.status_code,
+                        "body": verify_body,
+                    },
+                    indent=2,
+                ),
+                flush=True,
+            )
 
     print(json.dumps({"ok": True, "postId": post_id, "title": title}, indent=2))
 

@@ -47,6 +47,8 @@ AGENT_ARENA_ENABLE_BACKGROUND_RUNNER=true
 AGENT_ARENA_NODE_ROLE=runtime
 AGENT_ARENA_RUNNER_TOKEN=replace-with-a-long-random-string
 FIGHT_CLUB_ACTIVE_FIGHTERS=atr-breakout-engine,micro-mean-revert
+FIGHT_CLUB_LIVE_TRADING=true
+FIGHT_CLUB_LIVE_FIGHTER_CAPITAL_USD=
 FIGHT_CLUB_MOLTBOOK_REPORTS=true
 FIGHT_CLUB_MOLTBOOK_POST_INTERVAL_SEC=600
 FIGHT_CLUB_REPO_URL=https://github.com/richard7463/xlayer-agent-fight-club
@@ -215,6 +217,7 @@ It should also confirm:
 1. `data/fight-club/live-proof.json` updates after each runtime cycle
 2. `data/fight-club/runtime/*.json` contains recent runtime events
 3. new Moltbook posts continue to appear under `u/agentfightclub`
+4. both fighters have recent real swap tx hashes in the runtime files, not just stale simulation records
 
 ## OpenClaw Prompt
 

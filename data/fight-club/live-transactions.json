@@ -1,25 +1,6 @@
 {
   "walletAddress": "0xdbc8e35ea466f85d57c0cc1517a81199b8549f04",
   "accountId": "215b2fab-d681-4c3a-a5cd-8408ef4db5ef",
-  "network": "X Layer",
-  "totalTransactions": 5,
-  "balances": [
-    {
-      "symbol": "USD₮0",
-      "balance": "6.76361",
-      "usdValue": "6.76367763"
-    },
-    {
-      "symbol": "USDC",
-      "balance": "0.194215",
-      "usdValue": "0.19419169"
-    },
-    {
-      "symbol": "OKB",
-      "balance": "0.000097291194095507",
-      "usdValue": "0.0081277"
-    }
-  ],
   "transactions": [
     {
       "fighterId": "atr-breakout-engine",
@@ -91,5 +72,5 @@
       "note": "Live breakout/reversion exit executed through Agentic Wallet on X Layer."
     }
   ],
-  "updatedAt": "2026-04-10T01:18:58.746Z"
+  "updatedAt": "2026-04-10T01:18:27.490Z"
 }

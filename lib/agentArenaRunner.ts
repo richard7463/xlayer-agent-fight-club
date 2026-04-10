@@ -3,6 +3,13 @@ import { listStoredArenaAgents, type StoredArenaAgent } from "@/lib/agentArenaSt
 import { syncDemoCopyFollowers } from "@/lib/agentArenaCopyStore";
 import { shouldAutoStartArenaRunner } from "@/lib/agentArenaDeployment";
 import { getFightClubSeasonFighters, type FightClubStrategyId } from "@/lib/fightClubSeason";
+import {
+  getFightClubLiveBaseBalance,
+  getFightClubLiveLedger,
+  getFightClubLiveQuoteBalanceUsd,
+  submitFightClubLiveTrade,
+  type FightClubRecordedTransaction,
+} from "@/lib/fightClubAgenticTrade";
 import { maybePostFightClubSeasonUpdate } from "@/lib/fightClubReporter";
 import {
   appendArenaRunnerEvent,
@@ -39,12 +46,16 @@ type RunnerTarget = {
   direction: StoredArenaAgent["submission"]["direction"];
   copyTradeEnabled: boolean;
   strategy: FightClubStrategyId;
+  tradeTokenSymbol: string;
+  tradeTokenAddress: string;
+  tradeTokenDecimals: number;
   maxQuoteFraction: number;
   maxQuoteUsd: number;
   minQuoteBalanceUsd: number;
   stopLossPct: number;
   takeProfitPct: number;
   cooldownMs: number;
+  maxHoldMs: number;
 };
 
 declare global {
@@ -65,6 +76,167 @@ function getRunnerState(): RunnerState {
 
 function nowIso() {
   return new Date().toISOString();
+}
+
+function isFightClubLiveTradingEnabled() {
+  return process.env.FIGHT_CLUB_LIVE_TRADING !== "false";
+}
+
+function getFightClubLiveAllocationUsd() {
+  const override = Number(process.env.FIGHT_CLUB_LIVE_FIGHTER_CAPITAL_USD || "");
+  if (Number.isFinite(override) && override > 0) {
+    return override;
+  }
+  return null;
+}
+
+function isStableSettlementSymbol(symbol: string) {
+  return ["USD₮0", "USDC", "USDT"].includes(symbol.toUpperCase());
+}
+
+function inferLedgerSide(target: RunnerTarget, transaction: FightClubRecordedTransaction) {
+  const fromSymbol = transaction.fromSymbol.toUpperCase();
+  const toSymbol = transaction.toSymbol.toUpperCase();
+  const tokenSymbol = target.tradeTokenSymbol.toUpperCase();
+
+  if (toSymbol === tokenSymbol && isStableSettlementSymbol(fromSymbol)) {
+    return "buy" as const;
+  }
+
+  if (fromSymbol === tokenSymbol && isStableSettlementSymbol(toSymbol)) {
+    return "sell" as const;
+  }
+
+  return null;
+}
+
+function buildLiveRuntimeFromLedger(params: {
+  runtime: ArenaRunnerRuntime;
+  target: RunnerTarget;
+  allocatedCapitalUsd: number;
+  transactions: FightClubRecordedTransaction[];
+}) {
+  const createdAt = params.runtime.createdAt || nowIso();
+  const submissionEvent = params.runtime.events.find((event) => event.type === "submission");
+  const infoEvents = submissionEvent ? [submissionEvent] : [];
+  const nextRuntime: ArenaRunnerRuntime = {
+    ...params.runtime,
+    createdAt,
+    updatedAt: nowIso(),
+    enabled: true,
+    status: "active",
+    initialCapitalUsd: Number(params.allocatedCapitalUsd.toFixed(4)),
+    quoteBalanceUsd: Number(params.allocatedCapitalUsd.toFixed(4)),
+    basePositionQty: 0,
+    averageEntryPrice: 0,
+    realizedPnlUsd: 0,
+    unrealizedPnlUsd: 0,
+    totalPnlUsd: 0,
+    maxPnlUsd: 0,
+    maxEquityUsd: Number(params.allocatedCapitalUsd.toFixed(4)),
+    maxDrawdownPct: 0,
+    feesUsd: 0,
+    positionValueUsd: 0,
+    totalOrders: 0,
+    totalFills: 0,
+    closedTrades: 0,
+    winningTrades: 0,
+    blowups: 0,
+    activeOrderIds: [],
+    orders: [],
+    fills: [],
+    snapshots: [],
+    events: infoEvents,
+    lastAction: "hold",
+    lastActionNote: "Waiting for the next live season trigger.",
+    lastOrderAt: undefined,
+    lastOrderId: undefined,
+    lastError: undefined,
+  };
+
+  const orderedTransactions = [...params.transactions].sort((left, right) => left.timestamp.localeCompare(right.timestamp));
+
+  for (const transaction of orderedTransactions) {
+    const side = inferLedgerSide(params.target, transaction);
+    if (!side) {
+      continue;
+    }
+
+    const quoteUsd = Number(
+      side === "buy" ? transaction.fromAmount : transaction.toAmount,
+    );
+    const baseSize = Number(
+      side === "buy" ? transaction.toAmount : transaction.fromAmount,
+    );
+    if (!Number.isFinite(quoteUsd) || !Number.isFinite(baseSize) || quoteUsd <= 0 || baseSize <= 0) {
+      continue;
+    }
+
+    const fillPrice = quoteUsd / baseSize;
+    nextRuntime.totalOrders += 1;
+    nextRuntime.totalFills += 1;
+    nextRuntime.lastOrderAt = transaction.timestamp;
+    nextRuntime.lastOrderId = transaction.swapTxHash;
+    nextRuntime.orders.push({
+      orderId: transaction.swapTxHash,
+      side,
+      state: "filled",
+      requestedQuoteUsd: Number(quoteUsd.toFixed(6)),
+      requestedBaseSize: Number(baseSize.toFixed(8)),
+      createdAt: transaction.timestamp,
+      updatedAt: transaction.timestamp,
+    });
+    nextRuntime.fills.push({
+      tradeId: transaction.swapTxHash,
+      orderId: transaction.swapTxHash,
+      side,
+      fillPrice,
+      baseSize,
+      quoteValueUsd: quoteUsd,
+      feeUsd: 0,
+      timestamp: transaction.timestamp,
+    });
+
+    if (side === "buy") {
+      const nextQty = nextRuntime.basePositionQty + baseSize;
+      const nextCostBasis =
+        nextRuntime.averageEntryPrice * nextRuntime.basePositionQty + fillPrice * baseSize;
+      nextRuntime.quoteBalanceUsd = Math.max(0, nextRuntime.quoteBalanceUsd - quoteUsd);
+      nextRuntime.basePositionQty = nextQty;
+      nextRuntime.averageEntryPrice = nextQty > 0 ? nextCostBasis / nextQty : 0;
+      nextRuntime.lastAction = "buy";
+      nextRuntime.lastActionNote = `Live Agentic Wallet buy executed | swap ${transaction.swapTxHash}${transaction.approveTxHash ? ` | approve ${transaction.approveTxHash}` : ""}`;
+    } else {
+      const closeQty = Math.min(nextRuntime.basePositionQty, baseSize);
+      const realized = (fillPrice - nextRuntime.averageEntryPrice) * closeQty;
+      nextRuntime.quoteBalanceUsd += quoteUsd;
+      nextRuntime.realizedPnlUsd += realized;
+      nextRuntime.basePositionQty = Math.max(0, nextRuntime.basePositionQty - closeQty);
+      if (nextRuntime.basePositionQty <= 0.00000001) {
+        nextRuntime.basePositionQty = 0;
+        nextRuntime.averageEntryPrice = 0;
+      }
+      nextRuntime.closedTrades += 1;
+      if (realized > 0) {
+        nextRuntime.winningTrades += 1;
+      }
+      nextRuntime.lastAction = "sell";
+      nextRuntime.lastActionNote = `Live Agentic Wallet sell executed | swap ${transaction.swapTxHash}${transaction.approveTxHash ? ` | approve ${transaction.approveTxHash}` : ""}`;
+    }
+
+    appendArenaRunnerEvent(
+      nextRuntime,
+      createArenaRunnerEvent({
+        type: "fill",
+        status: "success",
+        title: side === "buy" ? "Live buy restored" : "Live sell restored",
+        note: `${transaction.fromAmount} ${transaction.fromSymbol} -> ${transaction.toAmount} ${transaction.toSymbol} | swap ${transaction.swapTxHash}${transaction.approveTxHash ? ` | approve ${transaction.approveTxHash}` : ""}`,
+        orderId: transaction.swapTxHash,
+      }),
+    );
+  }
+
+  return nextRuntime;
 }
 
 function timeframeToBar(timeframe: string): "15m" | "1H" | "4H" | "1D" {
@@ -140,12 +312,16 @@ async function listRunnerTargets(): Promise<RunnerTarget[]> {
         direction: entry.direction || fighter.direction || inferDirection(entry.agent),
         copyTradeEnabled: entry.copyTradeEnabled,
         strategy: fighter.strategy,
+        tradeTokenSymbol: fighter.tradeTokenSymbol,
+        tradeTokenAddress: fighter.tradeTokenAddress,
+        tradeTokenDecimals: fighter.tradeTokenDecimals,
         maxQuoteFraction: fighter.maxQuoteFraction,
         maxQuoteUsd: fighter.maxQuoteUsd,
         minQuoteBalanceUsd: fighter.minQuoteBalanceUsd,
         stopLossPct: fighter.stopLossPct,
         takeProfitPct: fighter.takeProfitPct,
         cooldownMs: fighter.cooldownMs,
+        maxHoldMs: fighter.maxHoldMs,
       } satisfies RunnerTarget;
     })
     .filter((item): item is RunnerTarget => Boolean(item));
@@ -369,11 +545,147 @@ function canPlaceNewOrder(runtime: ArenaRunnerRuntime, target: RunnerTarget) {
   return Date.now() - new Date(runtime.lastOrderAt).getTime() >= target.cooldownMs;
 }
 
+function applyImmediateFill(params: {
+  runtime: ArenaRunnerRuntime;
+  side: "buy" | "sell";
+  orderId: string;
+  tradeId: string;
+  quoteUsd: number;
+  baseSize: number;
+  fillPrice: number;
+  feeUsd: number;
+  note: string;
+}) {
+  const timestamp = nowIso();
+  const orderRecord = toOrderRecord({
+    orderId: params.orderId,
+    side: params.side,
+    quoteUsd: params.quoteUsd,
+    baseSize: params.side === "sell" ? params.baseSize : null,
+  });
+  orderRecord.state = "filled";
+  orderRecord.updatedAt = timestamp;
+  params.runtime.orders.unshift(orderRecord);
+  params.runtime.fills.push({
+    tradeId: params.tradeId,
+    orderId: params.orderId,
+    side: params.side,
+    fillPrice: params.fillPrice,
+    baseSize: params.baseSize,
+    quoteValueUsd: params.quoteUsd,
+    feeUsd: params.feeUsd,
+    timestamp,
+  });
+  params.runtime.totalOrders += 1;
+  params.runtime.totalFills += 1;
+  params.runtime.lastOrderAt = timestamp;
+  params.runtime.lastOrderId = params.orderId;
+  params.runtime.activeOrderIds = [];
+  params.runtime.feesUsd += params.feeUsd;
+
+  if (params.side === "buy") {
+    const nextQty = params.runtime.basePositionQty + params.baseSize;
+    const nextCostBasis =
+      params.runtime.averageEntryPrice * params.runtime.basePositionQty +
+      params.fillPrice * params.baseSize;
+    params.runtime.quoteBalanceUsd = Math.max(0, params.runtime.quoteBalanceUsd - params.quoteUsd - params.feeUsd);
+    params.runtime.basePositionQty = nextQty;
+    params.runtime.averageEntryPrice = nextQty > 0 ? nextCostBasis / nextQty : 0;
+  } else {
+    const closeQty = Math.min(params.runtime.basePositionQty, params.baseSize);
+    const realized = (params.fillPrice - params.runtime.averageEntryPrice) * closeQty - params.feeUsd;
+    params.runtime.quoteBalanceUsd += Math.max(0, params.quoteUsd - params.feeUsd);
+    params.runtime.realizedPnlUsd += realized;
+    params.runtime.basePositionQty = Math.max(0, params.runtime.basePositionQty - closeQty);
+    if (params.runtime.basePositionQty <= 0.00000001) {
+      params.runtime.basePositionQty = 0;
+      params.runtime.averageEntryPrice = 0;
+    }
+    params.runtime.closedTrades += 1;
+    if (realized > 0) {
+      params.runtime.winningTrades += 1;
+    }
+  }
+
+  appendArenaRunnerEvent(
+    params.runtime,
+    createArenaRunnerEvent({
+      type: "fill",
+      status: "success",
+      title: params.side === "buy" ? "Live buy executed" : "Live sell executed",
+      note: params.note,
+      orderId: params.orderId,
+    }),
+  );
+}
+
+function asTradeableFighter(target: RunnerTarget) {
+  return {
+    id: target.agent.id,
+    label: target.agent.name,
+    tradeTokenSymbol: target.tradeTokenSymbol,
+    tradeTokenAddress: target.tradeTokenAddress,
+    tradeTokenDecimals: target.tradeTokenDecimals,
+  };
+}
+
 async function placeBuyOrder(
   target: RunnerTarget,
   runtime: ArenaRunnerRuntime,
   marketPrice: number,
 ) {
+  if (isFightClubLiveTradingEnabled()) {
+    const liveQuoteBalanceUsd = await getFightClubLiveQuoteBalanceUsd();
+    const maxBudget = Math.min(liveQuoteBalanceUsd * target.maxQuoteFraction, target.maxQuoteUsd);
+    const quoteBudget = Math.max(Math.min(target.maxQuoteUsd, maxBudget), 0);
+
+    if (quoteBudget < 0.05 || liveQuoteBalanceUsd < target.minQuoteBalanceUsd) {
+      runtime.lastAction = "hold";
+      runtime.lastActionNote = `${target.agent.name} live wallet balance is below the buy floor.`;
+      return;
+    }
+
+    const result = await submitFightClubLiveTrade({
+      fighter: asTradeableFighter(target),
+      side: "buy",
+      readableAmount: quoteBudget,
+    });
+    runtime.lastAction = result.ok ? "buy" : "hold";
+    runtime.lastActionNote = result.ok
+      ? `Live Agentic Wallet buy executed for ${quoteBudget.toFixed(2)} USD₮0.`
+      : result.note || "Live buy was rejected.";
+
+    if (!result.ok || !result.transaction) {
+      appendArenaRunnerEvent(
+        runtime,
+        createArenaRunnerEvent({
+          type: "error",
+          status: "failed",
+          title: "Live buy rejected",
+          note: result.note || "Live buy was rejected.",
+        }),
+      );
+      return;
+    }
+
+    const baseSize = Number(result.transaction.toAmount);
+    const quoteValue = Number(result.transaction.fromAmount);
+    const fillPrice = baseSize > 0 ? quoteValue / baseSize : marketPrice;
+    const feeUsd = 0;
+    applyImmediateFill({
+      runtime,
+      side: "buy",
+      orderId: result.transaction.swapTxHash,
+      tradeId: result.transaction.swapTxHash,
+      quoteUsd: quoteValue,
+      baseSize,
+      fillPrice,
+      feeUsd,
+      note: `Live Agentic Wallet buy executed | swap ${result.transaction.swapTxHash}${result.transaction.approveTxHash ? ` | approve ${result.transaction.approveTxHash}` : ""}`,
+    });
+    return;
+  }
+
   const clientOrderId = createClientOrderId(target.agent.id);
   const maxBudget = Math.min(runtime.quoteBalanceUsd * target.maxQuoteFraction, target.maxQuoteUsd);
   const quoteBudget = Math.max(target.maxQuoteUsd * 0.72, maxBudget);
@@ -452,6 +764,56 @@ async function placeSellOrder(
     return;
   }
 
+  if (isFightClubLiveTradingEnabled()) {
+    const liveBaseBalance = await getFightClubLiveBaseBalance(target.tradeTokenSymbol, target.tradeTokenAddress);
+    const readableAmount = Math.min(runtime.basePositionQty, liveBaseBalance);
+    if (readableAmount <= 0.00000001) {
+      runtime.lastAction = "hold";
+      runtime.lastActionNote = `${target.agent.name} has no live base balance available to close.`;
+      return;
+    }
+
+    const result = await submitFightClubLiveTrade({
+      fighter: asTradeableFighter(target),
+      side: "sell",
+      readableAmount,
+    });
+    runtime.lastAction = result.ok ? "sell" : "hold";
+    runtime.lastActionNote = result.ok
+      ? `Live Agentic Wallet sell executed for ${readableAmount.toFixed(8)} ${target.tradeTokenSymbol}.`
+      : result.note || "Live sell was rejected.";
+
+    if (!result.ok || !result.transaction) {
+      appendArenaRunnerEvent(
+        runtime,
+        createArenaRunnerEvent({
+          type: "error",
+          status: "failed",
+          title: "Live sell rejected",
+          note: result.note || "Live sell was rejected.",
+        }),
+      );
+      return;
+    }
+
+    const baseSize = Number(result.transaction.fromAmount);
+    const quoteValue = Number(result.transaction.toAmount);
+    const fillPrice = baseSize > 0 ? quoteValue / baseSize : marketPrice;
+    const feeUsd = 0;
+    applyImmediateFill({
+      runtime,
+      side: "sell",
+      orderId: result.transaction.swapTxHash,
+      tradeId: result.transaction.swapTxHash,
+      quoteUsd: quoteValue,
+      baseSize,
+      fillPrice,
+      feeUsd,
+      note: `Live Agentic Wallet sell executed | swap ${result.transaction.swapTxHash}${result.transaction.approveTxHash ? ` | approve ${result.transaction.approveTxHash}` : ""}`,
+    });
+    return;
+  }
+
   const clientOrderId = createClientOrderId(target.agent.id);
   const quoteValue = runtime.basePositionQty * marketPrice;
   const draft: ArenaDemoOrderDraft = {
@@ -513,7 +875,7 @@ async function placeSellOrder(
 }
 
 async function processRunnerTarget(target: RunnerTarget) {
-  const runtime = await ensureArenaRunnerRuntime(target.agent.id);
+  let runtime = await ensureArenaRunnerRuntime(target.agent.id);
   if (!runtime.enabled) {
     return runtime;
   }
@@ -522,10 +884,34 @@ async function processRunnerTarget(target: RunnerTarget) {
   runtime.status = "active";
   runtime.nextTickAt = new Date(Date.now() + runtime.tickIntervalSec * 1000).toISOString();
 
+  const liveTrading = isFightClubLiveTradingEnabled();
+  if (liveTrading) {
+    const liveQuoteBalance = await getFightClubLiveQuoteBalanceUsd();
+    const fighterCount = Math.max(1, getFightClubSeasonFighters().length);
+    const allocatedCapital =
+      getFightClubLiveAllocationUsd() ??
+      Math.max(liveQuoteBalance / fighterCount, target.maxQuoteUsd * 4);
+    const ledger = await getFightClubLiveLedger();
+    runtime = buildLiveRuntimeFromLedger({
+      runtime,
+      target,
+      allocatedCapitalUsd: allocatedCapital,
+      transactions: ledger.transactions.filter((item) => item.fighterId === target.agent.id),
+    });
+  }
   const [marketResult, historyResult, executionFeed] = await Promise.all([
     fetchLiveMarketContext(target.agent.symbol),
     fetchMarketHistory(target.agent.symbol, timeframeToBar(target.timeframe), 40),
-    fetchTradeExecutionFeed(target.agent.symbol),
+    liveTrading
+      ? Promise.resolve({
+          source: "fallback" as const,
+          demoMode: false,
+          note: "Live Agentic Wallet execution is managing the season ledger.",
+          activeOrders: 0,
+          orders: [],
+          fills: [],
+        })
+      : fetchTradeExecutionFeed(target.agent.symbol),
   ]);
 
   runtime.tickCount += 1;
@@ -549,8 +935,8 @@ async function processRunnerTarget(target: RunnerTarget) {
 
   runtime.lastMarketPrice = marketResult.market.lastPrice;
   runtime.lastMarketChange24hPct = marketResult.market.change24hPct;
-  runtime.status = executionFeed.source === "okx-trade" ? "active" : "error";
-  runtime.lastError = executionFeed.source === "okx-trade" ? undefined : executionFeed.note;
+  runtime.status = liveTrading || executionFeed.source === "okx-trade" ? "active" : "error";
+  runtime.lastError = liveTrading || executionFeed.source === "okx-trade" ? undefined : executionFeed.note;
 
   const orderStateMap = new Map(executionFeed.orders.map((order) => [order.orderId, order.state]));
   mergeOrderStates(runtime, orderStateMap);
@@ -561,6 +947,7 @@ async function processRunnerTarget(target: RunnerTarget) {
     runtime.basePositionQty > 0 && runtime.averageEntryPrice > 0
       ? ((marketResult.market.lastPrice - runtime.averageEntryPrice) / runtime.averageEntryPrice) * 100
       : 0;
+  const holdAgeMs = runtime.lastOrderAt ? Date.now() - new Date(runtime.lastOrderAt).getTime() : 0;
   const shouldBootstrapEntry =
     runtime.totalOrders === 0 &&
     runtime.totalFills === 0 &&
@@ -582,7 +969,12 @@ async function processRunnerTarget(target: RunnerTarget) {
       await placeBuyOrder(target, runtime, marketResult.market.lastPrice);
     } else if (
       runtime.basePositionQty > 0.00000001 &&
-      (signal.exitLong || positionPnlPct <= target.stopLossPct || positionPnlPct >= target.takeProfitPct)
+      (
+        signal.exitLong ||
+        positionPnlPct <= target.stopLossPct ||
+        positionPnlPct >= target.takeProfitPct ||
+        holdAgeMs >= target.maxHoldMs
+      )
     ) {
       await placeSellOrder(target, runtime, marketResult.market.lastPrice);
     }

@@ -7,42 +7,54 @@ export type FightClubSeasonFighter = {
   timeframe: "15m" | "1H";
   direction: "long";
   strategy: FightClubStrategyId;
+  tradeTokenSymbol: string;
+  tradeTokenAddress: string;
+  tradeTokenDecimals: number;
   maxQuoteFraction: number;
   maxQuoteUsd: number;
   minQuoteBalanceUsd: number;
   stopLossPct: number;
   takeProfitPct: number;
   cooldownMs: number;
+  maxHoldMs: number;
 };
 
 const DEFAULT_FIGHTERS: FightClubSeasonFighter[] = [
   {
     id: "atr-breakout-engine",
     label: "ATR Breakout Engine",
-    symbol: "BTC-USDT",
+    symbol: "OKB-USDT",
     timeframe: "15m",
     direction: "long",
     strategy: "atr-breakout",
-    maxQuoteFraction: 0.22,
-    maxQuoteUsd: 45,
-    minQuoteBalanceUsd: 24,
-    stopLossPct: -0.7,
-    takeProfitPct: 1.1,
-    cooldownMs: 60 * 1000,
+    tradeTokenSymbol: "OKB",
+    tradeTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    tradeTokenDecimals: 18,
+    maxQuoteFraction: 0.08,
+    maxQuoteUsd: 0.25,
+    minQuoteBalanceUsd: 0.6,
+    stopLossPct: -0.45,
+    takeProfitPct: 0.55,
+    cooldownMs: 8 * 60 * 1000,
+    maxHoldMs: 25 * 60 * 1000,
   },
   {
     id: "micro-mean-revert",
     label: "Micro Mean Revert",
-    symbol: "ETH-USDT",
-    timeframe: "15m",
+    symbol: "OKB-USDT",
+    timeframe: "1H",
     direction: "long",
     strategy: "micro-mean-revert",
-    maxQuoteFraction: 0.16,
-    maxQuoteUsd: 30,
-    minQuoteBalanceUsd: 18,
-    stopLossPct: -0.55,
-    takeProfitPct: 0.85,
-    cooldownMs: 45 * 1000,
+    tradeTokenSymbol: "OKB",
+    tradeTokenAddress: "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE",
+    tradeTokenDecimals: 18,
+    maxQuoteFraction: 0.07,
+    maxQuoteUsd: 0.20,
+    minQuoteBalanceUsd: 0.5,
+    stopLossPct: -0.35,
+    takeProfitPct: 0.40,
+    cooldownMs: 6 * 60 * 1000,
+    maxHoldMs: 18 * 60 * 1000,
   },
 ];
 

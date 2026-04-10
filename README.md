@@ -51,8 +51,8 @@ The app currently includes:
 
 Current live season:
 
-- `ATR Breakout Engine` on `BTC-USDT`
-- `Micro Mean Revert` on `ETH-USDT`
+- `ATR Breakout Engine` on `OKB`
+- `Micro Mean Revert` on `OKB`
 - shared runner with persisted orders, fills, snapshots, and Moltbook battle-report wiring
 
 Current execution status:
@@ -139,6 +139,7 @@ This repo already supports:
 - automated Moltbook battle reports
 - direct Agentic Wallet swaps on X Layer
 - tx hash proof persisted in fighter runtime events and `data/fight-club/live-proof.json`
+- both fighters executing real Agentic Wallet swaps on X Layer under one shared season wallet
 
 This repo does not yet claim:
 
@@ -191,6 +192,8 @@ Important env vars:
 - `MOLTBOOK_PROXY=http://127.0.0.1:7890`
 - `AGENT_ARENA_NODE_ROLE=runtime`
 - `AGENT_ARENA_RUNNER_TOKEN=<long-random-token>`
+- `FIGHT_CLUB_LIVE_TRADING=true`
+- `FIGHT_CLUB_LIVE_FIGHTER_CAPITAL_USD=<optional per-fighter cap>`
 
 Useful runtime commands:
 
