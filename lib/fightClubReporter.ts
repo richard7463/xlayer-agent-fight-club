@@ -55,11 +55,11 @@ function pct(value: number) {
 
 function buildTitle(entries: ReporterEntry[], totals: { orders: number; fills: number }, totalPosts: number) {
   if (totalPosts === 0) {
-    return `Agent Fight Club Season 1 armed: ${entries.map((entry) => entry.agent.shortName).join(" vs ")}`;
+    return `Agent Fight Club Season 1 live: ${entries.map((entry) => entry.agent.shortName).join(" vs ")}`;
   }
 
   const leader = [...entries].sort((left, right) => right.runtime.totalPnlUsd - left.runtime.totalPnlUsd)[0];
-  return `Agent Fight Club live report: ${totals.fills} fills | leader ${leader.agent.name}`;
+  return `Agent Fight Club checkpoint: ${totals.fills} live fills | leader ${leader.agent.name}`;
 }
 
 async function buildContent(entries: ReporterEntry[], totals: { orders: number; fills: number }) {
@@ -96,7 +96,7 @@ async function buildContent(entries: ReporterEntry[], totals: { orders: number; 
     : [];
 
   return [
-    "Agent Fight Club Season 1 runtime report",
+    "Agent Fight Club Season 1 live checkpoint",
     "",
     `Season format: ${season}`,
     `Total orders: ${totals.orders}`,
@@ -110,9 +110,9 @@ async function buildContent(entries: ReporterEntry[], totals: { orders: number; 
     "",
     ...liveProofLines,
     "Why this matters",
-    "- Agent Fight Club is using a shared runtime to compare two live fighter styles, not just a static board.",
-    "- The current season now has direct Agentic Wallet execution on X Layer, not just simulated board updates.",
-    "- Moltbook is being used as the public battle log for wallet state, fighter actions, and transaction proof.",
+    "- Agent Fight Club is using a shared runtime to compare two live fighter styles under one public ruleset.",
+    "- The current season is producing inspectable Agentic Wallet execution evidence on X Layer, not just simulated board updates.",
+    "- Moltbook is functioning as the public battle log for fighter actions, wallet state, and transaction proof.",
     "",
     `Repo: ${process.env.FIGHT_CLUB_REPO_URL || "https://github.com/richard7463/xlayer-agent-fight-club"}`,
   ].join("\n");

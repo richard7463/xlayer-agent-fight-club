@@ -139,15 +139,20 @@ def solve_challenge(challenge: str):
 def build_post(proof: dict):
     txs = proof.get("transactions", [])
     balances = proof.get("balances", [])
-    title = f"Agent Fight Club live onchain proof: {len(txs)} real X Layer swaps"
+    title = f"Agent Fight Club checkpoint: {len(txs)} verified X Layer swaps"
     content_lines = [
-        "Agent Fight Club now has direct Agentic Wallet execution on X Layer.",
+        "Agent Fight Club is running as a live public evaluation harness for autonomous X Layer fighters.",
+        "",
+        "Season status",
+        "- shared Agentic Wallet runtime is live",
+        "- proof-backed fighter rounds are being recorded onchain",
+        "- Moltbook is the public battle log for execution evidence",
         "",
         f"Wallet: {proof.get('walletAddress')}",
         "Track: X Layer Arena",
-        f"Real swaps: {proof.get('totalTransactions')}",
+        f"Verified swaps: {proof.get('totalTransactions')}",
         "",
-        "Current fighter ledger",
+        "Recent verified fighter rounds",
     ]
     for idx, tx in enumerate(txs, start=1):
         line = (
@@ -158,14 +163,14 @@ def build_post(proof: dict):
             line += f" | approve {tx['approveTxHash']}"
         content_lines.append(line)
 
-    content_lines.extend(["", "Current balances"])
+    content_lines.extend(["", "Runtime wallet state"])
     for asset in balances:
         content_lines.append(f"- {asset['symbol']}: {asset['balance']} ({asset['usdValue']} USD)")
 
     content_lines.extend(
         [
             "",
-            "This season is no longer just a board. It now has direct onchain battle evidence, wallet state, and fighter-linked swaps.",
+            "This season is being judged on live continuity, inspectable execution evidence, and public competitive behavior, not just leaderboard claims.",
             "",
             f"Repo: {REPO_URL}",
         ]

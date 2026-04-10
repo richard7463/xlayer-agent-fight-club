@@ -63,21 +63,26 @@ async function main() {
   if (!apiKey) throw new Error("MOLTBOOK_API_KEY is not configured.");
   const proof = JSON.parse(await readFile(proofPath, "utf8"));
   const txs = proof.transactions || [];
-  const title = `Agent Fight Club live onchain proof: ${txs.length} real X Layer swaps`;
+  const title = `Agent Fight Club checkpoint: ${txs.length} verified X Layer swaps`;
   const content = [
-    "Agent Fight Club now has direct Agentic Wallet execution on X Layer.",
+    "Agent Fight Club is running as a live public evaluation harness for autonomous X Layer fighters.",
+    "",
+    "Season status",
+    "- shared Agentic Wallet runtime is live",
+    "- proof-backed fighter rounds are being recorded onchain",
+    "- Moltbook is the public battle log for execution evidence",
     "",
     `Wallet: ${proof.walletAddress}`,
     `Track: X Layer Arena`,
-    `Real swaps: ${proof.totalTransactions}`,
+    `Verified swaps: ${proof.totalTransactions}`,
     "",
-    "Current fighter ledger",
+    "Recent verified fighter rounds",
     ...txs.map((tx, index) => `${index + 1}. ${tx.fighterName}: ${tx.fromAmount} ${tx.fromSymbol} -> ${tx.toAmount} ${tx.toSymbol} | swap ${tx.swapTxHash}${tx.approveTxHash ? ` | approve ${tx.approveTxHash}` : ""}`),
     "",
-    "Current balances",
+    "Runtime wallet state",
     ...proof.balances.map((asset) => `- ${asset.symbol}: ${asset.balance} (${asset.usdValue} USD)`),
     "",
-    "This season is no longer just a board. It now has direct onchain battle evidence, wallet state, and fighter-linked swaps.",
+    "This season is being judged on live continuity, inspectable execution evidence, and public competitive behavior, not just leaderboard claims.",
     "",
     `Repo: ${process.env.FIGHT_CLUB_REPO_URL || "https://github.com/richard7463/xlayer-agent-fight-club"}`,
   ].join("\n");
