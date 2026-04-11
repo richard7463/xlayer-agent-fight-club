@@ -15,6 +15,7 @@ PROXY = os.environ.get("MOLTBOOK_PROXY", "")
 SUBMOLT = os.environ.get("MOLTBOOK_SUBMOLT", "buildx")
 REPO_URL = os.environ.get("FIGHT_CLUB_REPO_URL", "https://github.com/richard7463/xlayer-agent-fight-club")
 PROOF_PATH = Path.cwd() / "data" / "fight-club" / "live-proof.json"
+RUNTIME_DIR = Path.cwd() / "data" / "fight-club" / "runtime"
 NUMBER_UNITS = {
     "zero": 0,
     "one": 1,
@@ -136,10 +137,59 @@ def solve_challenge(challenge: str):
     return f"{value:.2f}"
 
 
+def load_runtime(agent_id: str):
+    path = RUNTIME_DIR / f"{agent_id}.json"
+    if not path.exists():
+        return {}
+    try:
+        return json.loads(path.read_text())
+    except Exception:
+        return {}
+
+
+def build_interaction_hook(atr_state: str, micro_state: str):
+    if atr_state == "hold" and micro_state == "hold":
+        return "Which proof layer matters more here: faster re-entry or cleaner attribution?"
+    if atr_state == "sell":
+        return "Should ATR re-enter immediately on the next tick or wait for confirmation?"
+    if micro_state == "sell":
+        return "Did the mean-revert exit improve the league or just reset risk?"
+    return "Is throughput or decision lineage more important for a public agent league?"
+
+
+def build_title(total_swaps: int, atr: dict, micro: dict, txs: list):
+    atr_state = atr.get("lastAction", "unknown")
+    micro_state = micro.get("lastAction", "unknown")
+    if txs:
+        latest = txs[0]
+        fighter = latest.get("fighterName", "league")
+        from_symbol = latest.get("fromSymbol", "?")
+        to_symbol = latest.get("toSymbol", "?")
+        return (
+            f"Fight Club update: {fighter} rotated {from_symbol}->{to_symbol} | "
+            f"{total_swaps} verified X Layer swaps"
+        )[:300]
+    if atr_state == "sell":
+        return f"Fight Club update: ATR reset complete | {total_swaps} verified X Layer swaps"[:300]
+    if micro_state == "sell":
+        return f"Fight Club update: Micro Mean Revert closed a round | {total_swaps} verified X Layer swaps"[:300]
+    if atr_state == "hold" and micro_state == "hold":
+        return f"Fight Club update: both fighters are live between rounds | {total_swaps} verified X Layer swaps"[:300]
+    return f"Agent Fight Club checkpoint: {total_swaps} verified X Layer swaps"[:300]
+
+
 def build_post(proof: dict):
     txs = proof.get("transactions", [])
     balances = proof.get("balances", [])
-    title = f"Agent Fight Club checkpoint: {len(txs)} verified X Layer swaps"
+    atr = load_runtime("atr-breakout-engine")
+    micro = load_runtime("micro-mean-revert")
+    title = build_title(len(txs), atr, micro, txs)
+    atr_state = atr.get("lastAction", "unknown")
+    atr_orders = atr.get("totalOrders", 0)
+    atr_order_id = atr.get("lastOrderId", "n/a")
+    micro_state = micro.get("lastAction", "unknown")
+    micro_orders = micro.get("totalOrders", 0)
+    micro_order_id = micro.get("lastOrderId", "n/a")
     content_lines = [
         "Agent Fight Club is running as a live public evaluation harness for autonomous X Layer fighters.",
         "",
@@ -151,6 +201,10 @@ def build_post(proof: dict):
         f"Wallet: {proof.get('walletAddress')}",
         "Track: X Layer Arena",
         f"Verified swaps: {proof.get('totalTransactions')}",
+        "",
+        "Current fighter state",
+        f"- ATR Breakout Engine: {atr_state} | orders {atr_orders} | last order {atr_order_id}",
+        f"- Micro Mean Revert: {micro_state} | orders {micro_orders} | last order {micro_order_id}",
         "",
         "Recent verified fighter rounds",
     ]
@@ -171,6 +225,10 @@ def build_post(proof: dict):
         [
             "",
             "This season is being judged on live continuity, inspectable execution evidence, and public competitive behavior, not just leaderboard claims.",
+            "What matters is not only who is ahead, but whether entry, execution, and outcome can be inspected in public.",
+            "",
+            "Interaction prompt",
+            build_interaction_hook(atr_state, micro_state),
             "",
             f"Repo: {REPO_URL}",
         ]

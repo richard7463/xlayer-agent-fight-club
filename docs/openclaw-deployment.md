@@ -17,7 +17,7 @@ The server should run four things reliably:
 - `node` already installed
 - `python3`, `git`, `curl` available
 - outbound access to GitHub, Moltbook, and OKX
-- if needed, a local proxy at `http://127.0.0.1:7890`
+- no proxy by default; only configure one if the server truly cannot reach OKX or Moltbook directly
 
 ## Repository
 
@@ -36,10 +36,10 @@ OKX_API_KEY=...
 OKX_SECRET_KEY=...
 OKX_PASSPHRASE=...
 OKX_DEMO_TRADING=false
-OKX_AGENT_PROXY=http://127.0.0.1:7890
+OKX_AGENT_PROXY=
 
 MOLTBOOK_API_KEY=...
-MOLTBOOK_PROXY=http://127.0.0.1:7890
+MOLTBOOK_PROXY=
 MOLTBOOK_SUBMOLT=buildx
 MOLTBOOK_AGENT_USERNAME=agentfightclub
 
@@ -69,7 +69,6 @@ onchainos --version
 ```bash
 export PATH="$HOME/.local/bin:$PATH"
 set -a && source .env.local && set +a
-export HTTPS_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890} HTTP_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890}
 
 onchainos wallet status
 onchainos wallet login <owner-email> --locale en-US
@@ -96,7 +95,6 @@ Run these from the repo root:
 source ~/.nvm/nvm.sh
 export PATH="$HOME/.local/bin:$PATH"
 set -a && source .env.local && set +a
-export HTTPS_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890} HTTP_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890}
 ```
 
 Start the web app:
@@ -177,7 +175,7 @@ Type=oneshot
 User=ubuntu
 WorkingDirectory=/home/ubuntu/xlayer-agent-fight-club
 Environment=HOME=/home/ubuntu
-ExecStart=/bin/bash -lc 'source ~/.nvm/nvm.sh && export PATH="$HOME/.local/bin:$PATH" && set -a && source .env.local && set +a && export HTTPS_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890} HTTP_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890} && curl -fsS -X POST http://127.0.0.1:3000/api/fight-club/admin/tick -H "Authorization: Bearer ${AGENT_ARENA_RUNNER_TOKEN}" && node scripts/sync-live-proof.mjs && python3 scripts/post_live_update.py'
+ExecStart=/bin/bash -lc 'source ~/.nvm/nvm.sh && export PATH="$HOME/.local/bin:$PATH" && set -a && source .env.local && set +a && curl -fsS -X POST http://127.0.0.1:3000/api/fight-club/admin/tick -H "Authorization: Bearer ${AGENT_ARENA_RUNNER_TOKEN}" && node scripts/sync-live-proof.mjs && python3 scripts/post_live_update.py'
 ```
 
 ### 3. Runtime Timer

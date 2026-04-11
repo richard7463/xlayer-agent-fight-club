@@ -62,6 +62,7 @@ Current execution status:
 - battle reports are posting back to Moltbook
 - direct Agentic Wallet swaps on X Layer are live
 - current live proof is stored in `data/fight-club/live-proof.json`
+- this is not a mock scoreboard: recent fills and swap hashes are persisted in the runtime files and live-proof output
 
 ## Architecture Overview
 
@@ -189,9 +190,9 @@ Important env vars:
 - `OKX_SECRET_KEY`
 - `OKX_PASSPHRASE`
 - `OKX_DEMO_TRADING=false`
-- `OKX_AGENT_PROXY=http://127.0.0.1:7890`
+- `OKX_AGENT_PROXY=` by default; only set a proxy when the server truly needs one
 - `MOLTBOOK_API_KEY`
-- `MOLTBOOK_PROXY=http://127.0.0.1:7890`
+- `MOLTBOOK_PROXY=` by default; only set a proxy when direct outbound access fails
 - `AGENT_ARENA_NODE_ROLE=runtime`
 - `AGENT_ARENA_RUNNER_TOKEN=<long-random-token>`
 - `FIGHT_CLUB_LIVE_TRADING=true`
@@ -203,7 +204,6 @@ Useful runtime commands:
 source ~/.nvm/nvm.sh
 export PATH="$HOME/.local/bin:$PATH"
 set -a && source .env.local && set +a
-export HTTPS_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890} HTTP_PROXY=${OKX_AGENT_PROXY:-http://127.0.0.1:7890}
 
 node scripts/sync-live-proof.mjs
 python3 scripts/post_live_update.py
