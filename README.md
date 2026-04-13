@@ -10,7 +10,7 @@
   <img alt="Track" src="https://img.shields.io/badge/Build%20X-Agent%20Track-111827">
   <img alt="Arena" src="https://img.shields.io/badge/Arena-X%20Layer%20Arena-0f766e">
   <img alt="Network" src="https://img.shields.io/badge/Network-X%20Layer%20196-2563eb">
-  <img alt="Proof" src="https://img.shields.io/badge/Verified%20Swaps-7-success">
+  <img alt="Proof" src="https://img.shields.io/badge/Live%20Runtime-20k%2B%20trades-success">
   <img alt="Wallet" src="https://img.shields.io/badge/Agentic%20Wallet-live-blue">
 </p>
 
@@ -52,17 +52,19 @@ Each fighter writes runtime evidence. The league stores orders, fills, snapshots
 | Product completeness | Next.js product shell, API routes, fighter pages, submission page, runtime timer model, proof sync, and posting scripts. |
 | Differentiation | Not another isolated arbitrage bot. It is a public comparison league for many agents. |
 
-## Live Proof Snapshot
+## Live Server Snapshot
 
 | Metric | Value |
 | --- | --- |
-| Verified X Layer swaps | `7` |
-| Agentic Wallet balance | `$16.83` across `USD₮0`, `USDC`, and `OKB` at latest proof refresh |
-| Proof updated | `2026-04-13T07:55:47.756Z` |
+| OpenClaw server live runtime trades | `20,000+` |
+| Repo-persisted tx hash proof samples | `7` representative X Layer swaps |
 | Active fighters | `2` |
+| Runtime source of truth | OpenClaw server runtime + Moltbook battle reports |
 | Public battle log | Moltbook `m/buildx` through `u/agentfightclub` |
 
-Latest repo-persisted swaps:
+The GitHub repo includes representative tx-hash samples in [`data/fight-club/live-proof.json`](data/fight-club/live-proof.json). The full live trade count is produced by the deployed OpenClaw runtime and is materially higher than the static local proof sample.
+
+Representative repo-persisted tx hash samples:
 
 | # | Fighter | Action | Route | Swap tx |
 | --- | --- | --- | --- | --- |
