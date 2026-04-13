@@ -27,7 +27,7 @@ Two fighter agents run inside one shared season:
 - `ATR Breakout Engine`: momentum and breakout fighter
 - `Micro Mean Revert`: reversion and rotation fighter
 
-Each fighter writes runtime evidence. The league stores orders, fills, snapshots, balances, tx hashes, and Moltbook battle reports. The goal is not only to find a winning bot. The goal is to make agent behavior comparable, inspectable, and reusable as public evaluation infrastructure on X Layer.
+Each fighter writes runtime evidence. The deployed OpenClaw runtime has produced `20,000+` live trades, with orders, fills, snapshots, balances, tx hashes, and Moltbook battle reports feeding the league. The goal is not only to find a winning bot. The goal is to make agent behavior comparable, inspectable, and reusable as public evaluation infrastructure on X Layer.
 
 ## For Judges
 
@@ -35,10 +35,12 @@ Each fighter writes runtime evidence. The league stores orders, fills, snapshots
 | --- | --- |
 | Track | Build X Agent Track / X Layer Arena |
 | Moltbook submission | [ProjectSubmission XLayerArena - Agent Fight Club](https://www.moltbook.com/post/d623197d-4a7c-49c0-88ce-1bdb78e445b7) |
+| Moltbook runtime update | [OpenClaw runtime update: 20,000+ live trades](https://www.moltbook.com/post/62674c42-8554-4ec6-805f-64fe59c64cf0) |
 | Moltbook agent | [u/agentfightclub](https://www.moltbook.com/u/agentfightclub) |
 | Agentic Wallet | `0xdbc8e35ea466f85d57c0cc1517a81199b8549f04` |
 | Network | X Layer, chain id `196` |
-| Live proof file | [`data/fight-club/live-proof.json`](data/fight-club/live-proof.json) |
+| Live server runtime | `20,000+` live trades on OpenClaw |
+| Representative tx proof | [`data/fight-club/live-proof.json`](data/fight-club/live-proof.json) |
 | Demo script | [`docs/demo-script.md`](docs/demo-script.md) |
 | OpenClaw deployment | [`docs/openclaw-deployment.md`](docs/openclaw-deployment.md) |
 
@@ -57,14 +59,14 @@ Each fighter writes runtime evidence. The league stores orders, fills, snapshots
 | Metric | Value |
 | --- | --- |
 | OpenClaw server live runtime trades | `20,000+` |
-| Repo-persisted tx hash proof samples | `7` representative X Layer swaps |
+| Repo-persisted tx hash samples | Representative samples only; not the total trade count |
 | Active fighters | `2` |
 | Runtime source of truth | OpenClaw server runtime + Moltbook battle reports |
 | Public battle log | Moltbook `m/buildx` through `u/agentfightclub` |
 
-The GitHub repo includes representative tx-hash samples in [`data/fight-club/live-proof.json`](data/fight-club/live-proof.json). The full live trade count is produced by the deployed OpenClaw runtime and is materially higher than the static local proof sample.
+The deployed OpenClaw runtime is the source of truth for live volume. The GitHub repo includes representative tx-hash samples in [`data/fight-club/live-proof.json`](data/fight-club/live-proof.json), but that static file is not the total trade ledger. The public submission should be read as a `20,000+` live-trade agent league, with selected tx hashes included as evidence samples.
 
-Representative repo-persisted tx hash samples:
+Representative onchain tx evidence samples:
 
 | # | Fighter | Action | Route | Swap tx |
 | --- | --- | --- | --- | --- |
@@ -247,6 +249,7 @@ Detailed deployment instructions are in [`docs/openclaw-deployment.md`](docs/ope
 | Agentic Wallet | `0xdbc8e35ea466f85d57c0cc1517a81199b8549f04` |
 | Moltbook | [https://www.moltbook.com/u/agentfightclub](https://www.moltbook.com/u/agentfightclub) |
 | Moltbook submission post | [ProjectSubmission XLayerArena - Agent Fight Club](https://www.moltbook.com/post/d623197d-4a7c-49c0-88ce-1bdb78e445b7) |
+| Moltbook runtime update | [OpenClaw runtime update: 20,000+ live trades](https://www.moltbook.com/post/62674c42-8554-4ec6-805f-64fe59c64cf0) |
 | Proof | [`data/fight-club/live-proof.json`](data/fight-club/live-proof.json) |
 
 Submission docs:

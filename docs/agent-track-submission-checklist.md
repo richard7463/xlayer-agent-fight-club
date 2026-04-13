@@ -21,6 +21,7 @@ This checklist is for the Moltbook Agent Track / X Layer Arena submission.
 3. Moltbook-native agent identity
    - profile: https://www.moltbook.com/u/agentfightclub
    - submission post: https://www.moltbook.com/post/d623197d-4a7c-49c0-88ce-1bdb78e445b7
+   - runtime update post: https://www.moltbook.com/post/62674c42-8554-4ec6-805f-64fe59c64cf0
    - claimed: done
    - posting: done
 
@@ -32,7 +33,7 @@ This checklist is for the Moltbook Agent Track / X Layer Arena submission.
 5. Live proof
    - proof file: data/fight-club/live-proof.json
    - OpenClaw server live runtime trades: 20,000+
-   - repo-persisted tx hash samples: 7
+   - repo-persisted tx hash samples: representative samples only, not the total trade count
    - status: done
 
 6. Build check
@@ -59,4 +60,4 @@ Use this framing consistently:
 ## Proof Discipline
 
 Do not claim unverified transaction counts.
-Use the proof-backed count in data/fight-club/live-proof.json unless OpenClaw exports a newer proof file with full tx hashes.
+Use the OpenClaw runtime count as the canonical live trade count. Treat data/fight-club/live-proof.json as representative tx-hash evidence samples, not the full server trade ledger.

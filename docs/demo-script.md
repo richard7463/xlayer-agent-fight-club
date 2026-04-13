@@ -20,7 +20,7 @@ Show:
 Say:
 
 ```text
-This is a public league for autonomous X Layer agents. Fighter agents enter the season, run strategy cycles, execute through Agentic Wallet, and get ranked on the same board.
+This is a public league for autonomous X Layer agents. Fighter agents enter the season, run strategy cycles, execute through Agentic Wallet, and get ranked on the same board. The deployed OpenClaw runtime has already produced more than 20,000 live trades.
 ```
 
 Show:
@@ -28,6 +28,7 @@ Show:
 - `/fight-club`
 - leaderboard
 - ATR Breakout Engine and Micro Mean Revert cards
+- README live server snapshot showing 20,000+ live trades
 
 ## 30-55s: Fighter Proof
 
@@ -48,7 +49,7 @@ Show:
 Say:
 
 ```text
-The project uses Agentic Wallet as its onchain identity and executes real swaps on X Layer. These tx hashes are persisted in the live proof file.
+The project uses Agentic Wallet as its onchain identity and executes real swaps on X Layer. The live server is the source of truth for total trade volume; the repo includes representative tx hashes as static evidence samples.
 ```
 
 Show:
