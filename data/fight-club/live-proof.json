@@ -6,18 +6,18 @@
   "balances": [
     {
       "symbol": "USD₮0",
-      "balance": "6.76361",
-      "usdValue": "6.76367763"
+      "balance": "7.181962",
+      "usdValue": "7.18217745"
     },
     {
       "symbol": "USDC",
-      "balance": "0.194215",
-      "usdValue": "0.19419169"
+      "balance": "6.102745",
+      "usdValue": "6.10152445"
     },
     {
       "symbol": "OKB",
-      "balance": "0.000097291194095507",
-      "usdValue": "0.0081277"
+      "balance": "0.042883823906467043",
+      "usdValue": "3.54863642"
     }
   ],
   "transactions": [
@@ -91,5 +91,5 @@
       "note": "Live breakout/reversion exit executed through Agentic Wallet on X Layer."
     }
   ],
-  "updatedAt": "2026-04-10T01:18:58.746Z"
+  "updatedAt": "2026-04-13T07:47:21.966Z"
 }
