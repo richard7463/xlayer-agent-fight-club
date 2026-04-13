@@ -32,7 +32,7 @@ Live fighters
 2. Micro Mean Revert - reversion / rotation fighter
 
 Live proof
-The repo currently stores 5 verified X Layer swap hashes in data/fight-club/live-proof.json.
+The repo currently stores 7 verified X Layer swap hashes in data/fight-club/live-proof.json.
 Examples:
 - ATR Breakout Engine: OKB -> USDC | 0xd192e73fbdb9575b63fb9d7f780eeb89f0258dad2a71c914603d35cf132b6919
 - Micro Mean Revert: USDC -> OKB | 0x0cbff36e0d8d7254c4afd927f4b734fe34220c187297aef4337cacee8a02880b

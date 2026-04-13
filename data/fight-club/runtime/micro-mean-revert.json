@@ -1,40 +1,40 @@
 {
   "agentId": "micro-mean-revert",
   "createdAt": "2026-03-27T06:41:57.111Z",
-  "updatedAt": "2026-04-10T01:17:50.683Z",
+  "updatedAt": "2026-04-13T07:55:47.809Z",
   "enabled": true,
   "status": "active",
   "tickIntervalSec": 45,
-  "initialCapitalUsd": 3.2317,
-  "tickCount": 13,
-  "totalOrders": 2,
-  "totalFills": 2,
-  "closedTrades": 1,
-  "winningTrades": 1,
+  "initialCapitalUsd": 3.341,
+  "tickCount": 14,
+  "totalOrders": 4,
+  "totalFills": 4,
+  "closedTrades": 2,
+  "winningTrades": 0,
   "blowups": 0,
-  "quoteBalanceUsd": 3.2319120000000003,
+  "quoteBalanceUsd": 3.3393530000000005,
   "basePositionQty": 0,
   "averageEntryPrice": 0,
-  "lastMarketPrice": 2194.6,
-  "lastMarketChange24hPct": 0.2,
-  "realizedPnlUsd": 0.00021180128636999075,
+  "lastMarketPrice": 2188.23,
+  "lastMarketChange24hPct": -0.14,
+  "realizedPnlUsd": -0.0016470271316721013,
   "unrealizedPnlUsd": 0,
   "totalPnlUsd": 0,
   "maxPnlUsd": 0,
-  "maxEquityUsd": 3.2317,
-  "maxDrawdownPct": 0.05,
+  "maxEquityUsd": 3.341,
+  "maxDrawdownPct": 0.03,
   "feesUsd": 0,
   "positionValueUsd": 0,
   "activeOrderIds": [],
   "orders": [
     {
-      "orderId": "0xef0f5414f56b5ebc889f95102934840c22dd96da1fb0092065dd4d76e4b5a41c",
+      "orderId": "0x82f8bdc392514199a564c4a439be490ac683f8d30e47a2f5c95cd85b96a53a67",
       "side": "sell",
       "state": "filled",
-      "requestedQuoteUsd": 0.3,
-      "requestedBaseSize": 0.00359668,
-      "createdAt": "2026-04-10T01:17:50.683Z",
-      "updatedAt": "2026-04-10T01:17:50.683Z"
+      "requestedQuoteUsd": 0.2,
+      "requestedBaseSize": 0.00239183,
+      "createdAt": "2026-04-13T07:55:47.806Z",
+      "updatedAt": "2026-04-13T07:55:47.806Z"
     },
     {
       "orderId": "0x0cbff36e0d8d7254c4afd927f4b734fe34220c187297aef4337cacee8a02880b",
@@ -44,6 +44,24 @@
       "requestedBaseSize": 0.00359668,
       "createdAt": "2026-04-09T11:03:06.000Z",
       "updatedAt": "2026-04-09T11:03:06.000Z"
+    },
+    {
+      "orderId": "0x7474057b042429a3cabec5d7b93f6a8e9f12dd5ab2898435963dfe1b87a0d688",
+      "side": "buy",
+      "state": "filled",
+      "requestedQuoteUsd": 0.2,
+      "requestedBaseSize": 0.00239183,
+      "createdAt": "2026-04-10T01:14:04.000Z",
+      "updatedAt": "2026-04-10T01:14:04.000Z"
+    },
+    {
+      "orderId": "0xef0f5414f56b5ebc889f95102934840c22dd96da1fb0092065dd4d76e4b5a41c",
+      "side": "sell",
+      "state": "filled",
+      "requestedQuoteUsd": 0.300212,
+      "requestedBaseSize": 0.00359668,
+      "createdAt": "2026-04-10T01:17:42.647Z",
+      "updatedAt": "2026-04-10T01:17:42.647Z"
     }
   ],
   "fills": [
@@ -58,6 +76,16 @@
       "timestamp": "2026-04-09T11:03:06.000Z"
     },
     {
+      "tradeId": "0x7474057b042429a3cabec5d7b93f6a8e9f12dd5ab2898435963dfe1b87a0d688",
+      "orderId": "0x7474057b042429a3cabec5d7b93f6a8e9f12dd5ab2898435963dfe1b87a0d688",
+      "side": "buy",
+      "fillPrice": 83.61791110511122,
+      "baseSize": 0.002391832053166117,
+      "quoteValueUsd": 0.2,
+      "feeUsd": 0,
+      "timestamp": "2026-04-10T01:14:04.000Z"
+    },
+    {
       "tradeId": "0xef0f5414f56b5ebc889f95102934840c22dd96da1fb0092065dd4d76e4b5a41c",
       "orderId": "0xef0f5414f56b5ebc889f95102934840c22dd96da1fb0092065dd4d76e4b5a41c",
       "side": "sell",
@@ -65,18 +93,28 @@
       "baseSize": 0.00359668,
       "quoteValueUsd": 0.300212,
       "feeUsd": 0,
-      "timestamp": "2026-04-10T01:17:50.683Z"
+      "timestamp": "2026-04-10T01:17:42.647Z"
+    },
+    {
+      "tradeId": "0x82f8bdc392514199a564c4a439be490ac683f8d30e47a2f5c95cd85b96a53a67",
+      "orderId": "0x82f8bdc392514199a564c4a439be490ac683f8d30e47a2f5c95cd85b96a53a67",
+      "side": "sell",
+      "fillPrice": 82.8407537324977,
+      "baseSize": 0.00239183,
+      "quoteValueUsd": 0.198141,
+      "feeUsd": 0,
+      "timestamp": "2026-04-13T07:55:47.806Z"
     }
   ],
   "snapshots": [
     {
-      "timestamp": "2026-04-10T01:17:50.683Z",
-      "marketPrice": 2194.6,
-      "quoteBalanceUsd": 3.23,
+      "timestamp": "2026-04-13T07:55:47.808Z",
+      "marketPrice": 2188.23,
+      "quoteBalanceUsd": 3.34,
       "positionQty": 0,
       "averageEntryPrice": 0,
       "positionValueUsd": 0,
-      "equityUsd": 3.23,
+      "equityUsd": 3.34,
       "realizedPnlUsd": 0,
       "unrealizedPnlUsd": 0,
       "totalPnlUsd": 0,
@@ -85,17 +123,35 @@
   ],
   "events": [
     {
-      "id": "run_mns7v7x7_9f3ofc",
-      "timestamp": "2026-04-10T01:17:50.683Z",
+      "id": "run_mnwwejmm_o6wuym",
+      "timestamp": "2026-04-13T07:55:47.807Z",
       "type": "fill",
       "status": "success",
       "title": "Live sell executed",
-      "note": "Live Agentic Wallet sell executed | swap 0xef0f5414f56b5ebc889f95102934840c22dd96da1fb0092065dd4d76e4b5a41c",
+      "note": "Live Agentic Wallet sell executed | swap 0x82f8bdc392514199a564c4a439be490ac683f8d30e47a2f5c95cd85b96a53a67",
+      "orderId": "0x82f8bdc392514199a564c4a439be490ac683f8d30e47a2f5c95cd85b96a53a67"
+    },
+    {
+      "id": "run_mnwwe0r0_o5c5ye",
+      "timestamp": "2026-04-13T07:55:23.340Z",
+      "type": "fill",
+      "status": "success",
+      "title": "Live sell restored",
+      "note": "0.00359668 OKB -> 0.300212 USD₮0 | swap 0xef0f5414f56b5ebc889f95102934840c22dd96da1fb0092065dd4d76e4b5a41c",
       "orderId": "0xef0f5414f56b5ebc889f95102934840c22dd96da1fb0092065dd4d76e4b5a41c"
     },
     {
-      "id": "run_mns7ut4a_82ptve",
-      "timestamp": "2026-04-10T01:17:31.498Z",
+      "id": "run_mnwwe0qx_uc094z",
+      "timestamp": "2026-04-13T07:55:23.337Z",
+      "type": "fill",
+      "status": "success",
+      "title": "Live buy restored",
+      "note": "0.2 USD₮0 -> 0.002391832053166117 OKB | swap 0x7474057b042429a3cabec5d7b93f6a8e9f12dd5ab2898435963dfe1b87a0d688 | approve 0xe98634616cf286bfe61c82d0f4c74fc1ea8e9649d83954b0405c45bc3ae70686",
+      "orderId": "0x7474057b042429a3cabec5d7b93f6a8e9f12dd5ab2898435963dfe1b87a0d688"
+    },
+    {
+      "id": "run_mnwwe0qx_e8ik0e",
+      "timestamp": "2026-04-13T07:55:23.337Z",
       "type": "fill",
       "status": "success",
       "title": "Live buy restored",
@@ -111,10 +167,10 @@
       "note": "The agent has been added to the demo runner."
     }
   ],
-  "nextTickAt": "2026-04-10T01:18:14.402Z",
-  "lastTickAt": "2026-04-10T01:17:33.846Z",
+  "nextTickAt": "2026-04-13T07:56:07.331Z",
+  "lastTickAt": "2026-04-13T07:55:30.719Z",
   "lastAction": "sell",
-  "lastActionNote": "Live Agentic Wallet sell executed for 0.00359668 OKB.",
-  "lastOrderAt": "2026-04-10T01:17:50.683Z",
-  "lastOrderId": "0xef0f5414f56b5ebc889f95102934840c22dd96da1fb0092065dd4d76e4b5a41c"
+  "lastActionNote": "Live Agentic Wallet sell executed for 0.00239183 OKB.",
+  "lastOrderAt": "2026-04-13T07:55:47.806Z",
+  "lastOrderId": "0x82f8bdc392514199a564c4a439be490ac683f8d30e47a2f5c95cd85b96a53a67"
 }

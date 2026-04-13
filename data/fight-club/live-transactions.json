@@ -70,7 +70,35 @@
       "txStatus": "SUCCESS",
       "timestamp": "2026-04-10T01:17:42.647Z",
       "note": "Live breakout/reversion exit executed through Agentic Wallet on X Layer."
+    },
+    {
+      "fighterId": "atr-breakout-engine",
+      "fighterName": "ATR Breakout Engine",
+      "direction": "buy",
+      "fromSymbol": "USD₮0",
+      "fromAmount": "0.25",
+      "toSymbol": "OKB",
+      "toAmount": "0.003015120033280491",
+      "approveTxHash": null,
+      "swapTxHash": "0x7c6531fb53f683d4545e03190297cb637b4d96d52f53c979e8dc133bd758c87f",
+      "txStatus": "SUCCESS",
+      "timestamp": "2026-04-13T07:55:18.158Z",
+      "note": "Live breakout/reversion entry executed through Agentic Wallet on X Layer."
+    },
+    {
+      "fighterId": "micro-mean-revert",
+      "fighterName": "Micro Mean Revert",
+      "direction": "sell",
+      "fromSymbol": "OKB",
+      "fromAmount": "0.00239183",
+      "toSymbol": "USD₮0",
+      "toAmount": "0.198141",
+      "approveTxHash": null,
+      "swapTxHash": "0x82f8bdc392514199a564c4a439be490ac683f8d30e47a2f5c95cd85b96a53a67",
+      "txStatus": "SUCCESS",
+      "timestamp": "2026-04-13T07:55:44.392Z",
+      "note": "Live breakout/reversion exit executed through Agentic Wallet on X Layer."
     }
   ],
-  "updatedAt": "2026-04-10T01:18:27.490Z"
+  "updatedAt": "2026-04-13T07:55:45.650Z"
 }

@@ -1,32 +1,41 @@
 {
   "agentId": "atr-breakout-engine",
   "createdAt": "2026-03-27T06:41:39.264Z",
-  "updatedAt": "2026-04-10T01:17:29.400Z",
+  "updatedAt": "2026-04-13T07:55:22.180Z",
   "enabled": true,
   "status": "active",
   "tickIntervalSec": 45,
-  "initialCapitalUsd": 3.2317,
-  "tickCount": 14,
-  "totalOrders": 2,
-  "totalFills": 2,
+  "initialCapitalUsd": 3.466,
+  "tickCount": 15,
+  "totalOrders": 3,
+  "totalFills": 3,
   "closedTrades": 2,
   "winningTrades": 0,
   "blowups": 0,
-  "quoteBalanceUsd": 4.538468,
-  "basePositionQty": 0,
-  "averageEntryPrice": 0,
-  "lastMarketPrice": 71971.2,
-  "lastMarketChange24hPct": 0.25,
+  "quoteBalanceUsd": 4.522768,
+  "basePositionQty": 0.003015120033280491,
+  "averageEntryPrice": 82.91543860295229,
+  "lastMarketPrice": 70782.7,
+  "lastMarketChange24hPct": 0.05,
   "realizedPnlUsd": 0,
-  "unrealizedPnlUsd": 0,
-  "totalPnlUsd": 1.31,
-  "maxPnlUsd": 1.31,
-  "maxEquityUsd": 4.54,
+  "unrealizedPnlUsd": 213.17,
+  "totalPnlUsd": 214.48,
+  "maxPnlUsd": 214.48,
+  "maxEquityUsd": 217.94,
   "maxDrawdownPct": 0,
   "feesUsd": 0,
-  "positionValueUsd": 0,
+  "positionValueUsd": 213.42,
   "activeOrderIds": [],
   "orders": [
+    {
+      "orderId": "0x7c6531fb53f683d4545e03190297cb637b4d96d52f53c979e8dc133bd758c87f",
+      "side": "buy",
+      "state": "filled",
+      "requestedQuoteUsd": 0.25,
+      "requestedBaseSize": null,
+      "createdAt": "2026-04-13T07:55:22.178Z",
+      "updatedAt": "2026-04-13T07:55:22.178Z"
+    },
     {
       "orderId": "0xd192e73fbdb9575b63fb9d7f780eeb89f0258dad2a71c914603d35cf132b6919",
       "side": "sell",
@@ -66,27 +75,46 @@
       "quoteValueUsd": 0.642553,
       "feeUsd": 0,
       "timestamp": "2026-04-10T01:06:57.701Z"
+    },
+    {
+      "tradeId": "0x7c6531fb53f683d4545e03190297cb637b4d96d52f53c979e8dc133bd758c87f",
+      "orderId": "0x7c6531fb53f683d4545e03190297cb637b4d96d52f53c979e8dc133bd758c87f",
+      "side": "buy",
+      "fillPrice": 82.91543860295229,
+      "baseSize": 0.003015120033280491,
+      "quoteValueUsd": 0.25,
+      "feeUsd": 0,
+      "timestamp": "2026-04-13T07:55:22.178Z"
     }
   ],
   "snapshots": [
     {
-      "timestamp": "2026-04-10T01:17:29.400Z",
-      "marketPrice": 71971.2,
-      "quoteBalanceUsd": 4.54,
-      "positionQty": 0,
-      "averageEntryPrice": 0,
-      "positionValueUsd": 0,
-      "equityUsd": 4.54,
+      "timestamp": "2026-04-13T07:55:22.179Z",
+      "marketPrice": 70782.7,
+      "quoteBalanceUsd": 4.52,
+      "positionQty": 0.00301512,
+      "averageEntryPrice": 82.9154,
+      "positionValueUsd": 213.42,
+      "equityUsd": 217.94,
       "realizedPnlUsd": 0,
-      "unrealizedPnlUsd": 0,
-      "totalPnlUsd": 1.31,
+      "unrealizedPnlUsd": 213.17,
+      "totalPnlUsd": 214.48,
       "activeOrders": 0
     }
   ],
   "events": [
     {
-      "id": "run_mns7umjl_4dkak3",
-      "timestamp": "2026-04-10T01:17:22.977Z",
+      "id": "run_mnwwdzuq_1avleb",
+      "timestamp": "2026-04-13T07:55:22.178Z",
+      "type": "fill",
+      "status": "success",
+      "title": "Live buy executed",
+      "note": "Live Agentic Wallet buy executed | swap 0x7c6531fb53f683d4545e03190297cb637b4d96d52f53c979e8dc133bd758c87f",
+      "orderId": "0x7c6531fb53f683d4545e03190297cb637b4d96d52f53c979e8dc133bd758c87f"
+    },
+    {
+      "id": "run_mnwwdai7_5ixrqb",
+      "timestamp": "2026-04-13T07:54:49.327Z",
       "type": "fill",
       "status": "success",
       "title": "Live sell restored",
@@ -94,8 +122,8 @@
       "orderId": "0xf454693dca235ca297ff6fa7ca2a4db3ab35e780df2a39793d8d4e9726f5dc8d"
     },
     {
-      "id": "run_mns7umjl_5mdtlv",
-      "timestamp": "2026-04-10T01:17:22.977Z",
+      "id": "run_mnwwdai6_n0wo0p",
+      "timestamp": "2026-04-13T07:54:49.326Z",
       "type": "fill",
       "status": "success",
       "title": "Live sell restored",
@@ -111,10 +139,10 @@
       "note": "The agent has been added to the demo runner."
     }
   ],
-  "nextTickAt": "2026-04-10T01:18:06.424Z",
-  "lastTickAt": "2026-04-10T01:17:29.399Z",
-  "lastAction": "hold",
-  "lastActionNote": "ATR breakout | shortMA 71919.62 mediumMA 71864.54 longMA 72104.14 | ATR 189.25/309.10 | momentum -0.04%.",
-  "lastOrderAt": "2026-04-10T01:06:57.701Z",
-  "lastOrderId": "0xf454693dca235ca297ff6fa7ca2a4db3ab35e780df2a39793d8d4e9726f5dc8d"
+  "nextTickAt": "2026-04-13T07:55:33.159Z",
+  "lastTickAt": "2026-04-13T07:55:08.774Z",
+  "lastAction": "buy",
+  "lastActionNote": "Live Agentic Wallet buy executed for 0.25 USD₮0.",
+  "lastOrderAt": "2026-04-13T07:55:22.178Z",
+  "lastOrderId": "0x7c6531fb53f683d4545e03190297cb637b4d96d52f53c979e8dc133bd758c87f"
 }

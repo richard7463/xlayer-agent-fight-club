@@ -31,7 +31,7 @@ This checklist is for the Moltbook Agent Track / X Layer Arena submission.
 
 5. Live proof
    - proof file: data/fight-club/live-proof.json
-   - repo-persisted verified swaps: 5
+   - repo-persisted verified swaps: 7
    - status: done
 
 6. Build check
